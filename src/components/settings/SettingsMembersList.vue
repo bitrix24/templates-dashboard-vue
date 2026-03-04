@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import type { Member } from '../../types'
-import type { DropdownMenuItem } from '@nuxt/ui'
+import type { DropdownMenuItem } from '@bitrix24/b24ui-nuxt'
+
+// @todo add icons & colors & see template
 
 defineProps<{
   members: Member[]
 }>()
 
-const items = [{
-  label: 'Edit member',
-  onSelect: () => console.log('Edit member')
-}, {
-  label: 'Remove member',
-  color: 'error' as const,
-  onSelect: () => console.log('Remove member')
-}] satisfies DropdownMenuItem[]
+const items = [
+  {
+    label: 'Edit member',
+    onSelect: () => console.log('Edit member')
+  },
+  {
+    label: 'Remove member',
+    color: 'error' as const,
+    onSelect: () => console.log('Remove member')
+  }
+] satisfies DropdownMenuItem[]
 </script>
 
 <template>
@@ -24,7 +29,7 @@ const items = [{
       class="flex items-center justify-between gap-3 py-3 px-4 sm:px-6"
     >
       <div class="flex items-center gap-3 min-w-0">
-        <UAvatar
+        <B24Avatar
           v-bind="member.avatar"
           size="md"
         />
@@ -40,20 +45,19 @@ const items = [{
       </div>
 
       <div class="flex items-center gap-3">
-        <USelect
+        <B24Select
           :model-value="member.role"
           :items="['member', 'owner']"
           color="neutral"
-          :ui="{ value: 'capitalize', item: 'capitalize' }"
+          :b24ui="{ value: 'capitalize', item: 'capitalize' }"
         />
 
-        <UDropdownMenu :items="items" :content="{ align: 'end' }">
-          <UButton
-            icon="i-lucide-ellipsis-vertical"
+        <B24DropdownMenu :items="items" :content="{ align: 'end' }">
+          <B24Button
+            ddd-icon="i-lucide-ellipsis-vertical"
             color="neutral"
-            variant="ghost"
           />
-        </UDropdownMenu>
+        </B24DropdownMenu>
       </div>
     </li>
   </ul>

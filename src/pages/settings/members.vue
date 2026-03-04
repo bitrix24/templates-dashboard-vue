@@ -30,11 +30,11 @@ const filteredMembers = computed(() => {
       />
     </B24PageCard>
 
-    <B24PageCard variant="subtle" :ui="{ container: 'p-0 sm:p-0 gap-y-0', wrapper: 'items-stretch', header: 'p-4 mb-0 border-b border-default' }">
+    <B24PageCard variant="subtle" :b24ui="{ container: 'p-0 sm:p-0 gap-y-0', wrapper: 'items-stretch', header: 'p-4 mb-0 border-b border-(--ui-color-divider-default)' }">
       <template #header>
         <B24Input
           v-model="q"
-          icon="i-lucide-search"
+          dd-icon="i-lucide-search"
           placeholder="Search members"
           autofocus
           class="w-full"

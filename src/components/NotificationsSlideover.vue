@@ -9,7 +9,7 @@ const { data: notifications } = useFetch('https://dashboard-template.nuxt.dev/ap
 </script>
 
 <template>
-  <USlideover
+  <B24Slideover
     v-model:open="isNotificationsSlideoverOpen"
     title="Notifications"
   >
@@ -20,17 +20,17 @@ const { data: notifications } = useFetch('https://dashboard-template.nuxt.dev/ap
         :to="`/inbox?id=${notification.id}`"
         class="px-3 py-2.5 rounded-md hover:bg-elevated/50 flex items-center gap-3 relative -mx-3 first:-mt-3 last:-mb-3"
       >
-        <UChip
+        <B24Chip
           color="error"
           :show="!!notification.unread"
           inset
         >
-          <UAvatar
+          <B24Avatar
             v-bind="notification.sender.avatar"
             :alt="notification.sender.name"
             size="md"
           />
-        </UChip>
+        </B24Chip>
 
         <div class="text-sm flex-1">
           <p class="flex items-center justify-between">
@@ -49,5 +49,5 @@ const { data: notifications } = useFetch('https://dashboard-template.nuxt.dev/ap
         </div>
       </RouterLink>
     </template>
-  </USlideover>
+  </B24Slideover>
 </template>

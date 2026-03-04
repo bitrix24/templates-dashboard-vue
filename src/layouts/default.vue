@@ -2,94 +2,124 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStorage } from '@vueuse/core'
-import type { NavigationMenuItem } from '@nuxt/ui'
+import type { NavigationMenuItem } from '@bitrix24/b24ui-nuxt'
+import HomeIcon from '@bitrix24/b24icons-vue/outline/HomeIcon'
+import MessagesIcon from '@bitrix24/b24icons-vue/outline/MessagesIcon'
+import GroupIcon from '@bitrix24/b24icons-vue/outline/GroupIcon'
+import SettingsIcon from '@bitrix24/b24icons-vue/outline/SettingsIcon'
+import MessengerIcon from '@bitrix24/b24icons-vue/outline/MessengerIcon'
+import InfoCircleIcon from '@bitrix24/b24icons-vue/outline/InfoCircleIcon'
+import GitHubIcon from '@bitrix24/b24icons-vue/social/GitHubIcon'
+import HamburgerMenuIcon from '@bitrix24/b24icons-vue/outline/HamburgerMenuIcon'
 
 const toast = useToast()
 const route = useRoute()
 
 const open = ref(false)
+const appTitle = ref('someApp')
 
-const links = [[{
-  label: 'Home',
-  icon: 'i-lucide-house',
-  to: '/',
-  onSelect: () => {
-    open.value = false
-  }
-}, {
-  label: 'Inbox',
-  icon: 'i-lucide-inbox',
-  to: '/inbox',
-  badge: '4',
-  onSelect: () => {
-    open.value = false
-  }
-}, {
-  label: 'Customers',
-  icon: 'i-lucide-users',
-  to: '/customers',
-  onSelect: () => {
-    open.value = false
-  }
-}, {
-  label: 'Settings',
-  to: '/settings',
-  icon: 'i-lucide-settings',
-  defaultOpen: true,
-  type: 'trigger',
-  children: [{
-    label: 'General',
-    to: '/settings',
-    exact: true,
-    onSelect: () => {
-      open.value = false
+const links = [
+  [
+    {
+      label: 'Home',
+      icon: HomeIcon,
+      to: '/',
+      onSelect: () => {
+        open.value = false
+      }
+    },
+    {
+      label: 'Inbox',
+      icon: MessagesIcon,
+      to: '/inbox',
+      badge: '4',
+      onSelect: () => {
+        open.value = false
+      }
+    },
+    {
+      label: 'Customers',
+      icon: GroupIcon,
+      to: '/customers',
+      onSelect: () => {
+        open.value = false
+      }
+    },
+    {
+      label: 'Settings',
+      to: '/settings',
+      icon: SettingsIcon,
+      defaultOpen: true,
+      type: 'trigger',
+      children: [
+        {
+          label: 'General',
+          to: '/settings',
+          exact: true,
+          onSelect: () => {
+            open.value = false
+          }
+        },
+        {
+          label: 'Members',
+          to: '/settings/members',
+          onSelect: () => {
+            open.value = false
+          }
+        },
+        {
+          label: 'Notifications',
+          to: '/settings/notifications',
+          onSelect: () => {
+            open.value = false
+          }
+        },
+        {
+          label: 'Security',
+          to: '/settings/security',
+          onSelect: () => {
+            open.value = false
+          }
+        }
+      ]
     }
-  }, {
-    label: 'Members',
-    to: '/settings/members',
-    onSelect: () => {
-      open.value = false
+  ],
+  [
+    {
+      label: 'Feedback',
+      icon: MessengerIcon,
+      to: 'https://github.com/bitrix24/templates-dashboard-vue',
+      target: '_blank'
+    },
+    {
+      label: 'Help & Support',
+      icon: InfoCircleIcon,
+      to: 'https://bitrix24.github.io/b24ui/',
+      target: '_blank'
     }
-  }, {
-    label: 'Notifications',
-    to: '/settings/notifications',
-    onSelect: () => {
-      open.value = false
-    }
-  }, {
-    label: 'Security',
-    to: '/settings/security',
-    onSelect: () => {
-      open.value = false
-    }
-  }]
-}], [{
-  label: 'Feedback',
-  icon: 'i-lucide-message-circle',
-  to: 'https://github.com/nuxt-ui-templates/dashboard-vue',
-  target: '_blank'
-}, {
-  label: 'Help & Support',
-  icon: 'i-lucide-info',
-  to: 'https://github.com/nuxt/ui',
-  target: '_blank'
-}]] satisfies NavigationMenuItem[][]
+  ]
+] satisfies NavigationMenuItem[][]
 
-const groups = computed(() => [{
-  id: 'links',
-  label: 'Go to',
-  items: links.flat()
-}, {
-  id: 'code',
-  label: 'Code',
-  items: [{
-    id: 'source',
-    label: 'View page source',
-    icon: 'simple-icons:github',
-    to: `https://github.com/nuxt-ui-templates/dashboard-vue/blob/main/src/pages${route.path === '/' ? '/index' : route.path}.vue`,
-    target: '_blank'
-  }]
-}])
+const groups = computed(() => [
+  {
+    id: 'links',
+    label: 'Go to',
+    items: links.flat()
+  },
+  {
+    id: 'code',
+    label: 'Code',
+    items: [
+      {
+        id: 'source',
+        label: 'View page source',
+        icon: GitHubIcon,
+        to: `https://github.com/bitrix24/templates-dashboard-vue/blob/main/src/pages${route.path === '/' ? '/index' : route.path}.vue`,
+        target: '_blank'
+      }
+    ]
+  }
+])
 
 const cookie = useStorage('cookie-consent', 'pending')
 if (cookie.value !== 'accepted') {
@@ -97,36 +127,44 @@ if (cookie.value !== 'accepted') {
     title: 'We use first-party cookies to enhance your experience on our website.',
     duration: 0,
     close: false,
-    actions: [{
-      label: 'Accept',
-      color: 'neutral',
-      onClick: () => {
-        cookie.value = 'accepted'
+    actions: [
+      {
+        label: 'Accept',
+        color: 'neutral',
+        onClick: () => {
+          cookie.value = 'accepted'
+        }
+      },
+      {
+        label: 'Opt out',
+        color: 'neutral',
       }
-    }, {
-      label: 'Opt out',
-      color: 'neutral',
-    }]
+    ]
   })
 }
 </script>
 
 <template>
-  <B24DashboardGroup unit="rem" storage="local">
+  <B24DashboardGroup unit="px" storage="local">
     <B24DashboardSidebar
       id="default"
       v-model:open="open"
+      mode="drawer"
       collapsible
       resizable
-      class="bg-elevated/25"
-      :и24ui="{ footer: 'lg:border-t lg:border-default' }"
+      class="bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-01) backdrop-blur-md"
+      :b24ui="{
+        header: 'ps-4 pe-2.5',
+        footer: 'lg:border-t lg:border-(--ui-color-divider-default)'
+      }"
     >
       <template #header="{ collapsed }">
-        <TeamsMenu :collapsed="collapsed" />
+        <B24DashboardSidebarCollapse :icon="HamburgerMenuIcon" class="size-9 px-2" />
+        <LogoMenu v-if="!collapsed" :collapsed="collapsed" :title="appTitle" />
       </template>
 
       <template #default="{ collapsed }">
-        <B24DashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
+        <B24DashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-(--ui-color-divider-default) ms-4" />
 
         <B24NavigationMenu
           :collapsed="collapsed"
@@ -150,7 +188,7 @@ if (cookie.value !== 'accepted') {
       </template>
     </B24DashboardSidebar>
 
-    <B24DashboardSearch :groups="groups" />
+    <B24DashboardSearch :groups="groups" :color-mode="false" />
 
     <RouterView />
 

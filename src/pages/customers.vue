@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { useTemplateRef, h, ref, computed, watch, resolveComponent } from 'vue'
 import { upperFirst } from 'scule'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn } from '@bitrix24/b24ui-nuxt'
 import { useFetch } from '@vueuse/core'
 import { getPaginationRowModel, type Row } from '@tanstack/table-core'
 import type { User } from '../types'
 
-const UAvatar = resolveComponent('UAvatar')
-const UButton = resolveComponent('UButton')
-const UBadge = resolveComponent('UBadge')
-const UDropdownMenu = resolveComponent('UDropdownMenu')
-const UCheckbox = resolveComponent('UCheckbox')
+// @todo add icons & colors & see template
+
+const B24Avatar = resolveComponent('B24Avatar')
+const B24Button = resolveComponent('B24Button')
+const B24Badge = resolveComponent('B24Badge')
+const B24DropdownMenu = resolveComponent('B24DropdownMenu')
+const B24Checkbox = resolveComponent('B24Checkbox')
 
 const toast = useToast()
 const table = useTemplateRef('table')
@@ -32,7 +34,7 @@ function getRowItems(row: Row<User>) {
     },
     {
       label: 'Copy customer ID',
-      icon: 'i-lucide-copy',
+      // icon: 'i-lucide-copy',
       onSelect() {
         navigator.clipboard.writeText(row.original.id.toString())
         toast.add({
@@ -46,18 +48,18 @@ function getRowItems(row: Row<User>) {
     },
     {
       label: 'View customer details',
-      icon: 'i-lucide-list'
+      // icon: 'i-lucide-list'
     },
     {
       label: 'View customer payments',
-      icon: 'i-lucide-wallet'
+      // icon: 'i-lucide-wallet'
     },
     {
       type: 'separator'
     },
     {
       label: 'Delete customer',
-      icon: 'i-lucide-trash',
+      // icon: 'i-lucide-trash',
       color: 'error',
       onSelect() {
         toast.add({
@@ -73,7 +75,7 @@ const columns: TableColumn<User>[] = [
   {
     id: 'select',
     header: ({ table }) =>
-      h(UCheckbox, {
+      h(B24Checkbox, {
         'modelValue': table.getIsSomePageRowsSelected()
           ? 'indeterminate'
           : table.getIsAllPageRowsSelected(),
@@ -82,7 +84,7 @@ const columns: TableColumn<User>[] = [
         'ariaLabel': 'Select all'
       }),
     cell: ({ row }) =>
-      h(UCheckbox, {
+      h(B24Checkbox, {
         'modelValue': row.getIsSelected(),
         'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
         'ariaLabel': 'Select row'
@@ -97,7 +99,7 @@ const columns: TableColumn<User>[] = [
     header: 'Name',
     cell: ({ row }) => {
       return h('div', { class: 'flex items-center gap-3' }, [
-        h(UAvatar, {
+        h(B24Avatar, {
           ...row.original.avatar,
           size: 'lg'
         }),
@@ -111,17 +113,17 @@ const columns: TableColumn<User>[] = [
   {
     accessorKey: 'email',
     header: ({ column }) => {
-      const isSorted = column.getIsSorted()
+      // const isSorted = column.getIsSorted()
 
-      return h(UButton, {
+      return h(B24Button, {
         color: 'neutral',
         variant: 'ghost',
         label: 'Email',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
+        // icon: isSorted
+        //   ? isSorted === 'asc'
+        //     ? 'i-lucide-arrow-up-narrow-wide'
+        //     : 'i-lucide-arrow-down-wide-narrow'
+        //   : 'i-lucide-arrow-up-down',
         class: '-mx-2.5',
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
       })
@@ -143,7 +145,7 @@ const columns: TableColumn<User>[] = [
         bounced: 'warning' as const
       }[row.original.status]
 
-      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
+      return h(B24Badge, { class: 'capitalize', variant: 'subtle', color }, () =>
         row.original.status
       )
     }
@@ -155,7 +157,7 @@ const columns: TableColumn<User>[] = [
         'div',
         { class: 'text-right' },
         h(
-          UDropdownMenu,
+          B24DropdownMenu,
           {
             content: {
               align: 'end'
@@ -163,8 +165,8 @@ const columns: TableColumn<User>[] = [
             items: getRowItems(row)
           },
           () =>
-            h(UButton, {
-              icon: 'i-lucide-ellipsis-vertical',
+            h(B24Button, {
+              // icon: 'i-lucide-ellipsis-vertical',
               color: 'neutral',
               variant: 'ghost',
               class: 'ml-auto'
@@ -209,10 +211,6 @@ const pagination = ref({
   <B24DashboardPanel id="customers">
     <template #header>
       <B24DashboardNavbar title="Customers">
-        <template #leading>
-          <B24DashboardSidebarCollapse />
-        </template>
-
         <template #right>
           <CustomersAddModal />
         </template>
@@ -223,26 +221,26 @@ const pagination = ref({
       <div class="flex flex-wrap items-center justify-between gap-1.5">
         <B24Input
           v-model="email"
-          class="max-w-sm"
-          icon="i-lucide-search"
+          class="max-w-[384px]"
+          dd-icon="i-lucide-search"
           placeholder="Filter emails..."
         />
 
         <div class="flex flex-wrap items-center gap-1.5">
           <CustomersDeleteModal :count="table?.tableApi?.getFilteredSelectedRowModel().rows.length">
-            <UButton
+            <B24Button
               v-if="table?.tableApi?.getFilteredSelectedRowModel().rows.length"
               label="Delete"
               color="error"
               variant="subtle"
-              icon="i-lucide-trash"
+              ddd-icon="i-lucide-trash"
             >
               <template #trailing>
                 <B24Kbd>
                   {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length }}
                 </B24Kbd>
               </template>
-            </UButton>
+            </B24Button>
           </CustomersDeleteModal>
 
           <B24Select
@@ -253,7 +251,7 @@ const pagination = ref({
               { label: 'Unsubscribed', value: 'unsubscribed' },
               { label: 'Bounced', value: 'bounced' }
             ]"
-            :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
+            :b24ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
             placeholder="Filter status"
             class="min-w-28"
           />
@@ -276,11 +274,11 @@ const pagination = ref({
             "
             :content="{ align: 'end' }"
           >
-            <UButton
+            <B24Button
               label="Display"
               color="neutral"
               variant="outline"
-              trailing-icon="i-lucide-settings-2"
+              ddd-trailing-icon="i-lucide-settings-2"
             />
           </B24DropdownMenu>
         </div>
@@ -299,17 +297,17 @@ const pagination = ref({
         :data="data ?? []"
         :columns="columns"
         :loading="isFetching"
-        :ui="{
+        :b24ui="{
           base: 'table-fixed border-separate border-spacing-0',
           thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
           tbody: '[&>tr]:last:[&>td]:border-b-0',
-          th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
-          td: 'border-b border-default',
+          th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-(--ui-color-divider-default) first:border-l last:border-r',
+          td: 'border-b border-(--ui-color-divider-default)',
           separator: 'h-0'
         }"
       />
 
-      <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
+      <div class="flex items-center justify-between gap-3 border-t border-(--ui-color-divider-default) pt-4 mt-auto">
         <div class="text-sm text-muted">
           {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
           {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.

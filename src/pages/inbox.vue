@@ -50,15 +50,12 @@ const isMobile = breakpoints.smaller('lg')
 <template>
   <B24DashboardPanel
     id="inbox-1"
-    :default-size="25"
-    :min-size="20"
-    :max-size="30"
+    :default-size="320"
+    :min-size="400"
+    :max-size="480"
     resizable
   >
     <B24DashboardNavbar title="Inbox">
-      <template #leading>
-        <B24DashboardSidebarCollapse />
-      </template>
       <template #trailing>
         <B24Badge :label="filteredMails.length" variant="subtle" />
       </template>
@@ -78,12 +75,12 @@ const isMobile = breakpoints.smaller('lg')
 
   <InboxMail v-if="selectedMail" :mail="selectedMail" @close="selectedMail = null" />
   <div v-else class="hidden lg:flex flex-1 items-center justify-center">
-    <UIcon name="i-lucide-inbox" class="size-32 text-dimmed" />
+    <div name="i-lucide-inbox" class="size-32 text-dimmed" />
   </div>
 
-  <B24Slideover v-if="isMobile" v-model:open="isMailPanelOpen">
+  <B24Drawer v-if="isMobile" v-model:open="isMailPanelOpen">
     <template #content>
       <InboxMail v-if="selectedMail" :mail="selectedMail" @close="selectedMail = null" />
     </template>
-  </B24Slideover>
+  </B24Drawer>
 </template>

@@ -1,4 +1,4 @@
-import type { AvatarProps } from '@nuxt/ui'
+import type { AvatarProps } from '@bitrix24/b24ui-nuxt'
 
 export type UserStatus = 'subscribed' | 'unsubscribed' | 'bounced'
 export type SaleStatus = 'paid' | 'failed' | 'refunded'
@@ -30,7 +30,7 @@ export interface Member {
 
 export interface Stat {
   title: string
-  icon: string
+  // icon: string
   value: number | string
   variation: number
   formatter?: (value: number) => string

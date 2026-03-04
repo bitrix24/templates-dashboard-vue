@@ -44,7 +44,7 @@ defineShortcuts({
 </script>
 
 <template>
-  <div class="overflow-y-auto divide-y divide-default">
+  <div class="overflow-y-auto divide-y divide-default scrollbar-thin">
     <div
       v-for="(mail, index) in mails"
       :key="index"
@@ -64,7 +64,7 @@ defineShortcuts({
           <div class="flex items-center gap-3">
             {{ mail.from.name }}
 
-            <UChip v-if="mail.unread" />
+            <B24Chip v-if="mail.unread" />
           </div>
 
           <span>{{ isToday(new Date(mail.date)) ? format(new Date(mail.date), 'HH:mm') : format(new Date(mail.date), 'dd MMM') }}</span>

@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import { DateFormatter, getLocalTimeZone, CalendarDate, today } from '@internationalized/date'
 import type { Range } from '../../types'
 
+// @todo add icons & colors & see template
+
 const df = new DateFormatter('en-US', {
   dateStyle: 'medium'
 })
@@ -79,11 +81,11 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
 </script>
 
 <template>
-  <UPopover :content="{ align: 'start' }" :modal="true">
-    <UButton
+  <B24Popover :content="{ align: 'start' }" :modal="true">
+    <B24Button
       color="neutral"
       variant="ghost"
-      icon="i-lucide-calendar"
+      ddd-icon="i-lucide-calendar"
       class="data-[state=open]:bg-elevated group"
     >
       <span class="truncate">
@@ -101,19 +103,18 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
       </span>
 
       <template #trailing>
-        <UIcon name="i-lucide-chevron-down" class="shrink-0 text-dimmed size-5 group-data-[state=open]:rotate-180 transition-transform duration-200" />
+        <div name="i-lucide-chevron-down" class="shrink-0 text-dimmed size-5 group-data-[state=open]:rotate-180 transition-transform duration-200" />
       </template>
-    </UButton>
+    </B24Button>
 
     <template #content>
       <div class="flex items-stretch sm:divide-x divide-default">
         <div class="hidden sm:flex flex-col justify-center">
-          <UButton
+          <B24Button
             v-for="(range, index) in ranges"
             :key="index"
             :label="range.label"
             color="neutral"
-            variant="ghost"
             class="rounded-none px-4"
             :class="[isRangeSelected(range) ? 'bg-elevated' : 'hover:bg-elevated/50']"
             truncate
@@ -121,7 +122,7 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
           />
         </div>
 
-        <UCalendar
+        <B24Calendar
           v-model="calendarRange"
           class="p-2"
           :number-of-months="2"
@@ -129,5 +130,5 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
         />
       </div>
     </template>
-  </UPopover>
+  </B24Popover>
 </template>

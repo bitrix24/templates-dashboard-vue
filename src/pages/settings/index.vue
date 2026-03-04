@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import { reactive, ref } from 'vue'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import type { FormSubmitEvent } from '@bitrix24/b24ui-nuxt'
+
+// @todo add icons & colors & see template
 
 const fileRef = ref<HTMLInputElement>()
 
@@ -27,7 +29,7 @@ async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
   toast.add({
     title: 'Success',
     description: 'Your settings have been updated.',
-    icon: 'i-lucide-check',
+    // icon: 'i-lucide-check',
     color: 'success'
   })
   console.log(event.data)
@@ -145,7 +147,7 @@ function onFileClick() {
         label="Bio"
         description="Brief description for your profile. URLs are hyperlinked."
         class="flex max-sm:flex-col justify-between items-start gap-4"
-        :ui="{ container: 'w-full' }"
+        :b24ui="{ container: 'w-full' }"
       >
         <B24Textarea
           v-model="profile.bio"

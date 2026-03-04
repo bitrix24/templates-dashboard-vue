@@ -40,11 +40,10 @@ watch(periods, () => {
 </script>
 
 <template>
-  <USelect
+  <B24Select
     v-model="model"
     :items="periods"
-    variant="ghost"
     class="data-[state=open]:bg-elevated"
-    :ui="{ value: 'capitalize', itemLabel: 'capitalize', trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
+    :b24ui="{ value: 'capitalize', itemLabel: 'capitalize', trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
   />
 </template>

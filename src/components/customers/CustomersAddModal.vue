@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import type { FormSubmitEvent } from '@bitrix24/b24ui-nuxt'
+
+// @todo add icons & colors & see template
 
 const schema = z.object({
   name: z.string().min(2, 'Too short'),
@@ -24,37 +26,35 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 
 <template>
-  <UModal v-model:open="open" title="New customer" description="Add a new customer to the database">
-    <UButton label="New customer" icon="i-lucide-plus" />
+  <B24Modal v-model:open="open" title="New customer" description="Add a new customer to the database">
+    <B24Button label="New customer" ddd-icon="i-lucide-plus" />
 
     <template #body>
-      <UForm
+      <B24Form
         :schema="schema"
         :state="state"
         class="space-y-4"
         @submit="onSubmit"
       >
-        <UFormField label="Name" placeholder="John Doe" name="name">
-          <UInput v-model="state.name" class="w-full" />
-        </UFormField>
-        <UFormField label="Email" placeholder="john.doe@example.com" name="email">
-          <UInput v-model="state.email" class="w-full" />
-        </UFormField>
+        <B24FormField label="Name" placeholder="John Doe" name="name">
+          <B24Input v-model="state.name" class="w-full" />
+        </B24FormField>
+        <B24FormField label="Email" placeholder="john.doe@example.com" name="email">
+          <B24Input v-model="state.email" class="w-full" />
+        </B24FormField>
         <div class="flex justify-end gap-2">
-          <UButton
+          <B24Button
             label="Cancel"
             color="neutral"
-            variant="subtle"
             @click="open = false"
           />
-          <UButton
+          <B24Button
             label="Create"
             color="primary"
-            variant="solid"
             type="submit"
           />
         </div>
-      </UForm>
+      </B24Form>
     </template>
-  </UModal>
+  </B24Modal>
 </template>

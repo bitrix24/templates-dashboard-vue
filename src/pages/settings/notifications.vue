@@ -54,7 +54,7 @@ async function onChange() {
       class="mb-4"
     />
 
-    <B24PageCard variant="subtle" :ui="{ container: 'divide-y divide-default' }">
+    <B24PageCard variant="subtle" :b24ui="{ container: 'divide-y divide-default' }">
       <B24FormField
         v-for="field in section.fields"
         :key="field.name"

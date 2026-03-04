@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss" theme(static);
 @import "@bitrix24/b24ui-nuxt";
 
 /**
@@ -12,8 +12,4 @@
   .dark {
     --air-theme-bg-color: #000000;
   }
-}
-
-@theme static {
-  --ui-container: 80rem;
 }

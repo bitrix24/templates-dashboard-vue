@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+// @todo add icons & colors & see template
+
 withDefaults(defineProps<{
   count?: number
 }>(), {
@@ -16,7 +18,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <UModal
+  <B24Modal
     v-model:open="open"
     :title="`Delete ${count} customer${count > 1 ? 's' : ''}`"
     :description="`Are you sure, this action cannot be undone.`"
@@ -25,20 +27,18 @@ async function onSubmit() {
 
     <template #body>
       <div class="flex justify-end gap-2">
-        <UButton
+        <B24Button
           label="Cancel"
           color="neutral"
-          variant="subtle"
           @click="open = false"
         />
-        <UButton
+        <B24Button
           label="Delete"
           color="error"
-          variant="solid"
           loading-auto
           @click="onSubmit"
         />
       </div>
     </template>
-  </UModal>
+  </B24Modal>
 </template>

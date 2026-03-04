@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import { reactive } from 'vue'
-import type { FormError } from '@nuxt/ui'
+import type { FormError } from '@bitrix24/b24ui-nuxt'
 
 const passwordSchema = z.object({
   current: z.string().min(8, 'Must be at least 8 characters'),
@@ -34,7 +34,7 @@ const validate = (state: Partial<PasswordSchema>): FormError[] => {
       :schema="passwordSchema"
       :state="password"
       :validate="validate"
-      class="flex flex-col gap-4 max-w-xs"
+      class="flex flex-col gap-4 max-w-[320px]"
     >
       <B24FormField name="current">
         <B24Input

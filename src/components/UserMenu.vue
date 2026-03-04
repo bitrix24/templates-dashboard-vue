@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { DropdownMenuItem } from '@nuxt/ui'
+import type { DropdownMenuItem } from '@bitrix24/b24ui-nuxt'
 import { useColorMode } from '@vueuse/core'
 
 defineProps<{
@@ -8,10 +8,6 @@ defineProps<{
 }>()
 
 const colorMode = useColorMode()
-const appConfig = useAppConfig()
-
-const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose']
-const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
 
 const user = ref({
   name: 'Benjamin Canac',
@@ -21,126 +17,100 @@ const user = ref({
   }
 })
 
-const items = computed<DropdownMenuItem[][]>(() => ([[{
-  type: 'label',
-  label: user.value.name,
-  avatar: user.value.avatar
-}], [{
-  label: 'Profile',
-  icon: 'i-lucide-user'
-}, {
-  label: 'Billing',
-  icon: 'i-lucide-credit-card'
-}, {
-  label: 'Settings',
-  icon: 'i-lucide-settings',
-  to: '/settings'
-}], [{
-  label: 'Theme',
-  icon: 'i-lucide-palette',
-  children: [{
-    label: 'Primary',
-    slot: 'chip',
-    // @todo fix all appConfig.ui.colors.primary
-    // chip: appConfig.ui.colors.primary,
-    content: {
-      align: 'center',
-      collisionPadding: 16
-    },
-    children: colors.map(color => ({
-      label: color,
-      chip: color,
-      slot: 'chip',
-      // checked: appConfig.ui.colors.primary === color,
-      type: 'checkbox',
-      onSelect: (e) => {
-        e.preventDefault()
-
-        // appConfig.ui.colors.primary = color
+// @todo add icons & colors & see template
+const items = computed<DropdownMenuItem[][]>(() => (
+  [
+    [
+      {
+        type: 'label',
+        label: user.value.name,
+        avatar: user.value.avatar
       }
-    }))
-  }, {
-    label: 'Neutral',
-    slot: 'chip',
-    // chip: appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral,
-    content: {
-      align: 'end',
-      collisionPadding: 16
-    },
-    children: neutrals.map(color => ({
-      label: color,
-      chip: color === 'neutral' ? 'old-neutral' : color,
-      slot: 'chip',
-      type: 'checkbox',
-      // checked: appConfig.ui.colors.neutral === color,
-      onSelect: (e) => {
-        e.preventDefault()
-
-        // appConfig.ui.colors.neutral = color
+    ],
+    [
+      {
+        label: 'Profile'
+      },
+      {
+        label: 'Billing'
+      },
+      {
+        label: 'Settings',
+        to: '/settings'
       }
-    }))
-  }]
-}, {
-  label: 'Appearance',
-  icon: 'i-lucide-sun-moon',
-  children: [{
-    label: 'Light',
-    icon: 'i-lucide-sun',
-    type: 'checkbox',
-    checked: colorMode.value === 'light',
-    onSelect(e: Event) {
-      e.preventDefault()
-
-      colorMode.value = 'light'
-    }
-  }, {
-    label: 'Dark',
-    icon: 'i-lucide-moon',
-    type: 'checkbox',
-    checked: colorMode.value === 'dark',
-    onUpdateChecked(checked: boolean) {
-      if (checked) {
-        colorMode.value = 'dark'
+    ],
+    [
+      {
+        label: 'Appearance',
+        children: [
+          {
+            label: 'Light',
+            type: 'checkbox',
+            checked: colorMode.value === 'light',
+            onSelect(e: Event) {
+              e.preventDefault()
+              colorMode.value = 'light'
+            }
+          },
+          {
+            label: 'Dark',
+            type: 'checkbox',
+            checked: colorMode.value === 'dark',
+            onUpdateChecked(checked: boolean) {
+              if (checked) {
+                colorMode.value = 'dark'
+              }
+            },
+            onSelect(e: Event) {
+              e.preventDefault()
+            }
+          }
+        ]
       }
-    },
-    onSelect(e: Event) {
-      e.preventDefault()
-    }
-  }]
-}], [{
-  label: 'Templates',
-  icon: 'i-lucide-layout-template',
-  children: [{
-    label: 'Starter',
-    to: 'https://starter-vue-template.nuxt.dev/'
-  }, {
-    label: 'Dashboard',
-    to: 'https://dashboard-vue-template.nuxt.dev/',
-    color: 'primary',
-    checked: true,
-    type: 'checkbox'
-  }]
-}], [{
-  label: 'Documentation',
-  icon: 'i-lucide-book-open',
-  to: 'https://ui.nuxt.com/docs/getting-started/installation/vue',
-  target: '_blank'
-}, {
-  label: 'GitHub repository',
-  icon: 'simple-icons:github',
-  to: 'https://github.com/nuxt-ui-templates/dashboard-vue',
-  target: '_blank'
-}], [{
-  label: 'Log out',
-  icon: 'i-lucide-log-out'
-}]]))
+    ],
+    [
+      {
+        label: 'Templates',
+        children: [
+          {
+            label: 'Starter',
+            to: 'https://starter-vue-template.nuxt.dev/'
+          },
+          {
+            label: 'Dashboard',
+            to: 'https://dashboard-vue-template.nuxt.dev/',
+            checked: true,
+            type: 'checkbox'
+          }
+        ]
+      }
+    ],
+    [
+      {
+        label: 'Documentation',
+        to: 'https://ui.nuxt.com/docs/getting-started/installation/vue',
+        target: '_blank'
+      },
+      {
+        label: 'GitHub repository',
+        to: 'https://github.com/nuxt-ui-templates/dashboard-vue',
+        target: '_blank'
+      }
+    ],
+    [
+      {
+        label: 'Log out'
+      }
+    ]
+  ]
+))
 </script>
 
 <template>
   <B24DropdownMenu
     :items="items"
     :content="{ align: 'center', collisionPadding: 12 }"
-    :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
+    :b24ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
   >
     <B24Button
       v-bind="{
@@ -153,7 +123,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
       block
       :square="collapsed"
       class="data-[state=open]:bg-elevated"
-      :ui="{
+      :b24ui="{
         trailingIcon: 'text-dimmed'
       }"
     />

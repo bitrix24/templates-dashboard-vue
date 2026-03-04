@@ -8,15 +8,21 @@ import Bell1Icon from '@bitrix24/b24icons-vue/main/Bell1Icon'
 
 const { isNotificationsSlideoverOpen } = useDashboard()
 
-const items = [[{
-  label: 'New mail',
-  // icon: 'i-lucide-send',
-  to: '/inbox'
-}, {
-  label: 'New customer',
-  // icon: 'i-lucide-user-plus',
-  to: '/customers'
-}]] satisfies DropdownMenuItem[][]
+// @todo add icons & colors & see template
+const items = [
+  [
+    {
+      label: 'New mail',
+      // icon: 'i-lucide-send',
+      to: '/inbox'
+    },
+    {
+      label: 'New customer',
+      // icon: 'i-lucide-user-plus',
+      to: '/customers'
+    }
+  ]
+] satisfies DropdownMenuItem[][]
 
 const range = shallowRef<Range>({
   start: sub(new Date(), { days: 14 }),
@@ -28,11 +34,7 @@ const period = ref<Period>('daily')
 <template>
   <B24DashboardPanel id="home">
     <template #header>
-      <B24DashboardNavbar title="Home" :ui="{ right: 'gap-3' }">
-        <template #leading>
-          <B24DashboardSidebarCollapse />
-        </template>
-
+      <B24DashboardNavbar title="Home" :b24ui="{ right: 'gap-3' }">
         <template #right>
           <B24Tooltip text="Notifications" :shortcuts="['N']">
             <B24Button
@@ -48,7 +50,7 @@ const period = ref<Period>('daily')
           </B24Tooltip>
 
           <B24DropdownMenu :items="items">
-            <B24Button icon="i-lucide-plus" size="md" class="rounded-full" />
+            <B24Button ddd-icon="i-lucide-plus" size="md" class="rounded-full" />
           </B24DropdownMenu>
         </template>
       </B24DashboardNavbar>

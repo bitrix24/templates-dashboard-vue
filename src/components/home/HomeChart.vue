@@ -61,13 +61,13 @@ const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amo
 </script>
 
 <template>
-  <UCard ref="cardRef" :ui="{ root: 'overflow-visible', body: '!px-0 !pt-0 !pb-3' }">
+  <B24Card ref="cardRef" :b24ui="{ root: 'overflow-visible', body: '!px-0 !pt-0 !pb-3' }">
     <template #header>
       <div>
-        <p class="text-xs text-muted uppercase mb-1.5">
+        <p class="text-xs text-(--b24ui-typography-label-color) uppercase mb-1.5">
           Revenue
         </p>
-        <p class="text-3xl text-highlighted font-semibold">
+        <p class="text-3xl text-(--b24ui-typography-legend-color) font-semibold">
           {{ formatNumber(total) }}
         </p>
       </div>
@@ -82,12 +82,12 @@ const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amo
       <VisLine
         :x="x"
         :y="y"
-        color="var(--ui-primary)"
+        color="var(--ui-color-accent-main-primary-alt-2)"
       />
       <VisArea
         :x="x"
         :y="y"
-        color="var(--ui-primary)"
+        color="var(--ui-color-accent-main-primary-alt)"
         :opacity="0.1"
       />
 
@@ -98,26 +98,26 @@ const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amo
       />
 
       <VisCrosshair
-        color="var(--ui-primary)"
+        color="var(--ui-color-accent-soft-element-blue)"
         :template="template"
       />
 
       <VisTooltip />
     </VisXYContainer>
-  </UCard>
+  </B24Card>
 </template>
 
 <style scoped>
 .unovis-xy-container {
-  --vis-crosshair-line-stroke-color: var(--ui-primary);
-  --vis-crosshair-circle-stroke-color: var(--ui-bg);
+  --vis-crosshair-line-stroke-color: var(--ui-color-accent-main-primary-alt-2);
+  --vis-crosshair-circle-stroke-color: var(--ui-color-accent-soft-element-blue);
 
-  --vis-axis-grid-color: var(--ui-border);
-  --vis-axis-tick-color: var(--ui-border);
-  --vis-axis-tick-label-color: var(--ui-text-dimmed);
+  --vis-axis-grid-color: var(--ui-color-divider-default);
+  --vis-axis-tick-color: var(--ui-color-divider-default);
+  --vis-axis-tick-label-color: var(--b24ui-typography-label-color);
 
-  --vis-tooltip-background-color: var(--ui-bg);
-  --vis-tooltip-border-color: var(--ui-border);
-  --vis-tooltip-text-color: var(--ui-text-highlighted);
+  --vis-tooltip-background-color: var(--ui-color-design-tinted-na-bg);
+  --vis-tooltip-border-color: var(--ui-color-divider-default);
+  --vis-tooltip-text-color: var(--b24ui-typography-label-color);
 }
 </style>

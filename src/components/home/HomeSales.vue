@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent, ref, watch } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn } from '@bitrix24/b24ui-nuxt'
 import { randomInt, randomFrom } from '../../utils'
 import type { Period, Range, Sale } from '../../types'
 
@@ -9,7 +9,7 @@ const props = defineProps<{
   range: Range
 }>()
 
-const UBadge = resolveComponent('UBadge')
+const B24Badge = resolveComponent('B24Badge')
 
 const sampleEmails = [
   'james.anderson@example.com',
@@ -70,7 +70,7 @@ const columns: TableColumn<Sale>[] = [
         refunded: 'neutral' as const
       }[row.getValue('status') as string]
 
-      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
+      return h(B24Badge, { class: 'capitalize', variant: 'subtle', color }, () =>
         row.getValue('status')
       )
     }
@@ -97,16 +97,16 @@ const columns: TableColumn<Sale>[] = [
 </script>
 
 <template>
-  <UTable
+  <B24Table
     :data="data"
     :columns="columns"
     class="shrink-0"
-    :ui="{
+    :b24ui="{
       base: 'table-fixed border-separate border-spacing-0',
       thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
       tbody: '[&>tr]:last:[&>td]:border-b-0',
-      th: 'first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
-      td: 'border-b border-default'
+      th: 'first:rounded-l-lg last:rounded-r-lg border-y border-(--ui-color-divider-default) first:border-l last:border-r',
+      td: 'border-b border-(--ui-color-divider-default)'
     }"
   />
 </template>
