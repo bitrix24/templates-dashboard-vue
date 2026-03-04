@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
         colorMode: true,
         colorModeInitialValue: 'light',
         colorModeTypeLight: 'light',
-        colorModeStorageKey: 'bitrix24-ui-template-dashboard-vue',
+        colorModeStorageKey: 'bitrix24-ui-template-dashboard-vue'
       }),
       {
         name: 'global-post-to-get-rewriter',
