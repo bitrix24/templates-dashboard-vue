@@ -21,7 +21,8 @@ const isBxMobile = computed<boolean>(() => {
 })
 const items = computed<DropdownMenuItem[][]>(() => {
   return [
-    ...[
+    [
+      ...[
       {
         label: 'Simulation of action',
         icon: CirclePlusIcon,
@@ -34,8 +35,10 @@ const items = computed<DropdownMenuItem[][]>(() => {
           })
         }
       }
+    ]
     ],
-    ... (!isBxMobile.value
+    [
+      ... (!isBxMobile.value
       ? [
         {
           label: 'Create team',
@@ -59,6 +62,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
         }
       ]
       : [] )
+    ]
   ]
 })
 </script>
