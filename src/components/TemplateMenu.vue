@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import Expand1Icon from '@bitrix24/b24icons-vue/actions/Expand1Icon'
+</script>
+
 <template>
   <B24DropdownMenu
     :modal="false"
@@ -5,14 +9,12 @@
       {
         label: 'Starter',
         to: 'https://bitrix24.github.io/starter-b24ui-vue/',
-        checked: true,
-        type: 'checkbox'
       },
       {
         label: 'Dashboard',
-        to: 'https://bitrix24.github.io/b24ui/docs/components/sidebar-layout/',
-        disabled: true,
-        slot: 'dashboard'
+        to: 'https://bitrix24.github.io/templates-dashboard-vue/',
+        checked: true,
+        type: 'checkbox'
       },
       {
         type: 'separator'
@@ -37,15 +39,16 @@
     :b24ui="{ content: 'w-[200px]', viewport: 'w-[200px]' }"
   >
     <B24Button
-      label="Starter"
+      label="Dashboard"
       use-dropdown
-      class="truncate"
-    />
-
-    <template #dashboard-trailing>
-      <B24Badge size="xs">
-        Soon
-      </B24Badge>
-    </template>
+      color="air-tertiary-no-accent"
+      class="truncate w-full data-[state=open]:bg-(--ui-btn-background-hover)"
+      :class="['py-2.5']"
+      :b24ui="{ label: 'flex-1' }"
+    >
+      <template #trailing>
+        <Expand1Icon class="size-4" />
+      </template>
+    </B24Button>
   </B24DropdownMenu>
 </template>

@@ -1,12 +1,16 @@
 import type { B24FrameQueryParams, LoggerInterface } from '@bitrix24/b24jssdk'
 import { ref, nextTick } from 'vue'
-import { B24Frame, LoggerFactory, Result, SdkError, initializeB24Frame } from '@bitrix24/b24jssdk'
+import { B24Frame, LoggerFactory, Result, SdkError, initializeB24Frame, useB24Helper, LoadDataType } from '@bitrix24/b24jssdk'
 
 let $b24: undefined | B24Frame = undefined
+let $b24Helper: undefined | object = undefined
 const type = ref<'undefined' | 'B24Frame'>('undefined')
 
 export const useB24 = () => {
   const b24Config = {}
+
+  const { initB24Helper, getB24Helper } = useB24Helper()
+  type B24HelperData = ReturnType<typeof getB24Helper>
 
   function buildLogger(loggerTitle?: string): LoggerInterface {
     const devMode = typeof import.meta !== 'undefined' && import.meta.env?.DEV
@@ -15,6 +19,10 @@ export const useB24 = () => {
 
   function get() {
     return $b24
+  }
+
+  function getHelper(): B24HelperData | undefined {
+    return $b24Helper as B24HelperData | undefined
   }
 
   function set(newValue: unknown | B24Frame | string): Result {
@@ -67,7 +75,20 @@ export const useB24 = () => {
       }
 
       // now init b24Frame
-      return set(await initializeB24Frame(b24Config))
+      const b24 = await initializeB24Frame(b24Config)
+      await initB24Helper(
+        b24,
+        [
+          LoadDataType.App,
+          LoadDataType.Profile
+          // LoadDataType.AppOptions
+          // LoadDataType.UserOptions
+          // LoadDataType.Currency
+        ]
+      )
+
+      $b24Helper = getB24Helper()
+      return set(b24)
     } catch {
       // set(undefined)
     }
@@ -104,6 +125,7 @@ export const useB24 = () => {
     buildLogger,
     init,
     get,
+    getHelper,
     set,
     isFrame,
     isInit,

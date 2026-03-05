@@ -1,6 +1,7 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {createSharedComposable, useColorMode} from '@vueuse/core'
+import { createSharedComposable } from '@vueuse/core'
+import { useColorMode } from '#imports'
 
 const _useDashboard = () => {
   const route = useRoute()
@@ -10,7 +11,7 @@ const _useDashboard = () => {
   const isNotificationsSlideoverOpen = ref(false)
 
   defineShortcuts({
-    'shift_D': () => colorMode.value = !(colorMode.value === 'dark') ? 'dark' : 'light',
+    'shift_D': () => colorMode.preference = !(colorMode.value === 'dark') ? 'dark' : 'light',
     'g-h': () => router.push('/'),
     'g-i': () => router.push('/inbox'),
     'g-c': () => router.push('/customers'),

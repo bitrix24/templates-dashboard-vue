@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStorage } from '@vueuse/core'
-import type { NavigationMenuItem } from '@bitrix24/b24ui-nuxt'
+import type { NavigationMenuItem, CommandPaletteGroup, CommandPaletteItem } from '@bitrix24/b24ui-nuxt'
 import HomeIcon from '@bitrix24/b24icons-vue/outline/HomeIcon'
 import MessagesIcon from '@bitrix24/b24icons-vue/outline/MessagesIcon'
 import GroupIcon from '@bitrix24/b24icons-vue/outline/GroupIcon'
 import SettingsIcon from '@bitrix24/b24icons-vue/outline/SettingsIcon'
-import MessengerIcon from '@bitrix24/b24icons-vue/outline/MessengerIcon'
-import InfoCircleIcon from '@bitrix24/b24icons-vue/outline/InfoCircleIcon'
+import Bitrix24Icon from '@bitrix24/b24icons-vue/common-service/Bitrix24Icon'
+import TelegramIcon from '@bitrix24/b24icons-vue/outline/TelegramIcon'
 import GitHubIcon from '@bitrix24/b24icons-vue/social/GitHubIcon'
 import HamburgerMenuIcon from '@bitrix24/b24icons-vue/outline/HamburgerMenuIcon'
 
@@ -16,9 +16,25 @@ const toast = useToast()
 const route = useRoute()
 
 const open = ref(false)
-const appTitle = ref('someApp')
 
-const links = [
+const isNeedChangeTarget = ref(false)
+const tgLink = computed(() => {
+  return (
+    isNeedChangeTarget.value && (typeof window !== 'undefined' && window.navigator?.language.includes('ru'))
+  )
+    ? 'https://t.me/bitrix24apps'
+    : 'https://t.me/b24_dev'
+})
+
+const b24DocsLink = computed(() => {
+  return (
+    isNeedChangeTarget.value && (typeof window !== 'undefined' && window.navigator?.language.includes('ru'))
+  )
+    ? 'https://apidocs.bitrix24.ru/'
+    : 'https://apidocs.bitrix24.com/'
+})
+
+const links = computed<NavigationMenuItem[][]>(() => [
   [
     {
       label: 'Home',
@@ -86,25 +102,32 @@ const links = [
   ],
   [
     {
-      label: 'Feedback',
-      icon: MessengerIcon,
-      to: 'https://github.com/bitrix24/templates-dashboard-vue',
+      label: 'Bitrix24 REST API',
+      icon: Bitrix24Icon,
+      to: b24DocsLink.value,
       target: '_blank'
     },
     {
       label: 'Help & Support',
-      icon: InfoCircleIcon,
-      to: 'https://bitrix24.github.io/b24ui/',
+      icon: TelegramIcon,
+      to: tgLink.value,
       target: '_blank'
-    }
-  ]
-] satisfies NavigationMenuItem[][]
+    },
+    {
+      label: 'GitHub',
+      icon: GitHubIcon,
+      to: 'https://github.com/bitrix24/templates-dashboard-vue',
+      target: '_blank'
+    },
 
-const groups = computed(() => [
+  ]
+])
+
+const groups = computed<CommandPaletteGroup[]>(() => [
   {
     id: 'links',
     label: 'Go to',
-    items: links.flat()
+    items: links.value.flat() as CommandPaletteItem[]
   },
   {
     id: 'code',
@@ -117,7 +140,7 @@ const groups = computed(() => [
         to: `https://github.com/bitrix24/templates-dashboard-vue/blob/main/src/pages${route.path === '/' ? '/index' : route.path}.vue`,
         target: '_blank'
       }
-    ]
+    ] as CommandPaletteItem[]
   }
 ])
 
@@ -130,18 +153,22 @@ if (cookie.value !== 'accepted') {
     actions: [
       {
         label: 'Accept',
-        color: 'neutral',
+        color: 'air-primary-success',
         onClick: () => {
           cookie.value = 'accepted'
         }
       },
       {
         label: 'Opt out',
-        color: 'neutral',
+        color: 'air-secondary-no-accent',
       }
     ]
   })
 }
+
+onMounted(() => {
+  isNeedChangeTarget.value = true
+})
 </script>
 
 <template>
@@ -160,7 +187,7 @@ if (cookie.value !== 'accepted') {
     >
       <template #header="{ collapsed }">
         <B24DashboardSidebarCollapse :icon="HamburgerMenuIcon" class="size-9 px-2" />
-        <LogoMenu v-if="!collapsed" :collapsed="collapsed" :title="appTitle" />
+        <TemplateMenu v-if="!collapsed" />
       </template>
 
       <template #default="{ collapsed }">

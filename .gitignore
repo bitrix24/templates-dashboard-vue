@@ -31,3 +31,5 @@ tsconfig.node.tsbuildinfo
 
 # Environment variables
 .env
+
+@tmp
