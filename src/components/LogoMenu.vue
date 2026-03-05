@@ -7,7 +7,8 @@ import Filter2LinesIcon from '@bitrix24/b24icons-vue/outline/Filter2LinesIcon'
 import { useB24 } from '../composables/useB24.ts'
 import { useState } from '#imports'
 
-const $b24 = useB24().get() as B24Frame
+const b24Instance = useB24()
+const $b24 = b24Instance.get() as B24Frame
 const toast = useToast()
 
 const props = defineProps<{
@@ -15,9 +16,15 @@ const props = defineProps<{
   title?: string
 }>()
 
-const platform = useState('platform')
+const platform = useState<{
+  name?: 'web' | 'bitrix-mobile' | 'bitrix-desktop'
+  version?: string
+}>('platform', () => ({}))
 const isBxMobile = computed<boolean>(() => {
   return platform.value.name === 'bitrix-mobile'
+})
+const isB24 = computed<boolean>(() => {
+  return b24Instance.isInit()
 })
 const items = computed<DropdownMenuItem[][]>(() => {
   return [
@@ -38,7 +45,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
     ]
     ],
     [
-      ... (!isBxMobile.value
+      ... (isB24.value && !isBxMobile.value
       ? [
         {
           label: 'Create team',

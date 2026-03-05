@@ -11,7 +11,10 @@ const b24Instance = useB24()
 
 const isLoading = ref(true)
 
-const platform = useState('platform')
+const platform = useState<{
+  name?: 'web' | 'bitrix-mobile' | 'bitrix-desktop'
+  version?: string
+}>('platform', () => ({}))
 const isBxMobile = computed<boolean>(() => {
   return platform.value.name === 'bitrix-mobile'
 })
