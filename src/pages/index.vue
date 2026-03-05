@@ -61,7 +61,7 @@ const period = ref<Period>('daily')
           </B24Tooltip>
 
           <B24DropdownMenu
-            v-if="isBxMobile || 1 > 0"
+            v-if="isBxMobile"
             :items="items"
             :content="{ align: 'end' }"
           >
