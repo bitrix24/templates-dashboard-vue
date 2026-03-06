@@ -1,0 +1,312 @@
+[
+  {
+    "id": 1,
+    "unread": true,
+    "sender": {
+      "name": "Ethan Williams",
+      "email": "ethan.williams@example.com",
+      "avatar": {
+        "src": "/avatar/employee.png"
+      }
+    },
+    "body": "Your order #12345 has been confirmed and is being prepared for shipment.",
+    "date": "2026-03-06T06:48:15.837Z"
+  },
+  {
+    "id": 2,
+    "sender": {
+      "name": "Mia White",
+      "avatar": {
+        "src": "/avatar/assistant.png"
+      }
+    },
+    "body": "We need your approval for the bulk purchase request from client XYZ.",
+    "date": "2026-03-06T05:55:15.837Z"
+  },
+  {
+    "id": 3,
+    "unread": true,
+    "sender": {
+      "name": "System User",
+      "avatar": {
+        "src": "https://github.com/bitrix24.png"
+      }
+    },
+    "body": "Invoice #INV-2026-03-06 is now available for download in your account.",
+    "date": "2026-03-06T03:55:15.837Z"
+  },
+  {
+    "id": 4,
+    "sender": {
+      "name": "Ethan Williams",
+      "avatar": {
+        "src": "/avatar/employee.png"
+      }
+    },
+    "body": "Payment of $2,500 has been successfully received. Thank you for your business!",
+    "date": "2026-03-06T03:55:15.837Z"
+  },
+  {
+    "id": 5,
+    "sender": {
+      "name": "Olivia Martinez",
+      "avatar": {
+        "src": "/avatar/assistant.png"
+      }
+    },
+    "body": "Your subscription to Premium plan has been renewed for another month.",
+    "date": "2026-03-05T23:55:15.837Z"
+  },
+  {
+    "id": 6,
+    "sender": {
+      "name": "System User",
+      "avatar": {
+        "src": "https://github.com/bitrix24.png"
+      }
+    },
+    "body": "A new lead has been assigned to you: Acme Corporation. Please contact them.",
+    "date": "2026-03-05T03:55:15.837Z"
+  },
+  {
+    "id": 7,
+    "unread": true,
+    "sender": {
+      "name": "Noah Harris",
+      "email": "noah.harris@example.com",
+      "avatar": {
+        "src": "/avatar/employee.png"
+      }
+    },
+    "body": "Reminder: Follow up with client about the proposal sent yesterday.",
+    "date": "2026-03-04T06:55:15.837Z"
+  },
+  {
+    "id": 8,
+    "sender": {
+      "name": "Charlotte Martin",
+      "email": "charlotte.martin@example.com",
+      "avatar": {
+        "src": "/avatar/assistant.png"
+      }
+    },
+    "body": "The deal with Global Tech has been closed. Congratulations on the sale!",
+    "date": "2026-03-01T02:55:15.837Z"
+  },
+  {
+    "id": 9,
+    "unread": true,
+    "sender": {
+      "name": "System User",
+      "avatar": {
+        "src": "https://github.com/bitrix24.png"
+      }
+    },
+    "body": "Support ticket #T-4567 has been updated with a new message from customer.",
+    "date": "2026-02-28T06:55:15.837Z"
+  },
+  {
+    "id": 10,
+    "sender": {
+      "name": "Liam Thomas",
+      "avatar": {
+        "src": "/avatar/employee.png"
+      }
+    },
+    "body": "Your refund request has been processed and will reflect in 3-5 business days.",
+    "date": "2026-02-28T06:55:15.837Z"
+  },
+  {
+    "id": 11,
+    "sender": {
+      "name": "Amelia Robinson",
+      "avatar": {
+        "src": "/avatar/assistant.png"
+      }
+    },
+    "body": "The product demo scheduled for tomorrow at 10 AM has been confirmed.",
+    "date": "2026-02-27T06:55:15.837Z"
+  },
+  {
+    "id": 12,
+    "sender": {
+      "name": "System User",
+      "avatar": {
+        "src": "https://github.com/bitrix24.png"
+      }
+    },
+    "body": "Please review the contract attached and sign it by the end of day.",
+    "date": "2026-02-25T06:55:15.837Z"
+  },
+  {
+    "id": 13,
+    "sender": {
+      "name": "Lucas Walker",
+      "email": "lucas.walker@example.com",
+      "avatar": {
+        "src": "/avatar/employee.png"
+      }
+    },
+    "body": "Your quote #Q-789 has been approved by the client. Proceed with order.",
+    "date": "2026-02-24T06:55:15.837Z"
+  },
+  {
+    "id": 14,
+    "sender": {
+      "name": "Mia White",
+      "email": "mia.white@example.com",
+      "avatar": {
+        "src": "/avatar/assistant.png"
+      }
+    },
+    "body": "Stock alert: Item #XYZ-123 is back in stock. You can place an order now.",
+    "date": "2026-02-23T06:55:15.837Z"
+  },
+  {
+    "id": 15,
+    "sender": {
+      "name": "System User",
+      "avatar": {
+        "src": "https://github.com/bitrix24.png"
+      }
+    },
+    "body": "Price drop alert: The item you viewed is now 15% off for a limited time.",
+    "date": "2026-02-22T06:55:15.837Z"
+  },
+  {
+    "id": 16,
+    "sender": {
+      "name": "Mason Lewis",
+      "avatar": {
+        "src": "/avatar/employee.png"
+      }
+    },
+    "body": "Meeting with sales team rescheduled to 3 PM today in Conference Room B.",
+    "date": "2026-02-21T06:55:15.837Z"
+  },
+  {
+    "id": 17,
+    "sender": {
+      "name": "Sophia Anderson",
+      "avatar": {
+        "src": "/avatar/assistant.png"
+      }
+    },
+    "body": "Task 'Prepare quarterly sales report' has been completed by your team.",
+    "date": "2026-02-20T06:55:15.837Z"
+  },
+  {
+    "id": 18,
+    "sender": {
+      "name": "System User",
+      "avatar": {
+        "src": "https://github.com/bitrix24.png"
+      }
+    },
+    "body": "Client feedback received: Positive review on Trustpilot. Great job!",
+    "date": "2026-02-19T06:55:15.837Z"
+  },
+  {
+    "id": 19,
+    "sender": {
+      "name": "Ethan Williams",
+      "email": "ethan.williams@example.com",
+      "avatar": {
+        "src": "/avatar/employee.png"
+      }
+    },
+    "body": "New comment on your proposal from John Doe: 'Looks good, let's schedule a call'.",
+    "date": "2026-02-18T06:55:15.837Z"
+  },
+  {
+    "id": 20,
+    "sender": {
+      "name": "Charlotte Martin",
+      "email": "charlotte.martin@example.com",
+      "avatar": {
+        "src": "/avatar/assistant.png"
+      }
+    },
+    "body": "Order #5678 has been shipped. Tracking number: 1Z999AA10123456784.",
+    "date": "2026-02-17T06:55:15.837Z"
+  },
+  {
+    "id": 21,
+    "sender": {
+      "name": "System User",
+      "avatar": {
+        "src": "https://github.com/bitrix24.png"
+      }
+    },
+    "body": "Your invoice is overdue. Please process payment at your earliest convenience.",
+    "date": "2026-02-17T06:55:15.837Z"
+  },
+  {
+    "id": 22,
+    "sender": {
+      "name": "Elijah Thompson",
+      "avatar": {
+        "src": "/avatar/employee.png"
+      }
+    },
+    "body": "A new document has been shared with you: Sales Contract for Client A.",
+    "date": "2026-02-16T06:55:15.837Z"
+  },
+  {
+    "id": 23,
+    "sender": {
+      "name": "Isabella Jackson",
+      "avatar": {
+        "src": "/avatar/assistant.png"
+      }
+    },
+    "body": "Your monthly sales target has been updated. Check the dashboard.",
+    "date": "2026-02-15T06:55:15.837Z"
+  },
+  {
+    "id": 24,
+    "sender": {
+      "name": "System User",
+      "avatar": {
+        "src": "https://github.com/bitrix24.png"
+      }
+    },
+    "body": "Reminder: You have a call with potential client in 30 minutes.",
+    "date": "2026-02-14T06:55:15.837Z"
+  },
+  {
+    "id": 25,
+    "sender": {
+      "name": "Liam Thomas",
+      "email": "liam.thomas@example.com",
+      "avatar": {
+        "src": "/avatar/employee.png"
+      }
+    },
+    "body": "The proposal you sent has been viewed by the client 3 times today.",
+    "date": "2026-02-14T06:55:15.837Z"
+  },
+  {
+    "id": 26,
+    "sender": {
+      "name": "Mia White",
+      "email": "mia.white@example.com",
+      "avatar": {
+        "src": "/avatar/assistant.png"
+      }
+    },
+    "body": "Congratulations! You've reached your quarterly sales goal.",
+    "date": "2026-02-13T06:55:15.837Z"
+  },
+  {
+    "id": 27,
+    "sender": {
+      "name": "System User",
+      "avatar": {
+        "src": "https://github.com/bitrix24.png"
+      }
+    },
+    "body": "Action required: Please update the pipeline for deal #9876.",
+    "date": "2026-02-12T06:55:15.837Z"
+  }
+]

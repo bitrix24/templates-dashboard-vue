@@ -1,12 +1,18 @@
-import { ref, watch } from 'vue'
+import {computed, ref, watch} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { createSharedComposable } from '@vueuse/core'
-import { useColorMode } from '#imports'
+import { useColorMode, useState } from '#imports'
+
 
 const _useDashboard = () => {
   const route = useRoute()
   const router = useRouter()
   const colorMode = useColorMode()
+
+  const platform = useState<{
+    name?: 'web' | 'bitrix-mobile' | 'bitrix-desktop'
+    version?: string
+  }>('platform', () => ({}))
 
   const isNotificationsSlideoverOpen = ref(false)
 
@@ -23,8 +29,13 @@ const _useDashboard = () => {
     isNotificationsSlideoverOpen.value = false
   })
 
+  const isBxMobile = computed<boolean>(() => {
+    return platform.value.name === 'bitrix-mobile'
+  })
+
   return {
-    isNotificationsSlideoverOpen
+    isNotificationsSlideoverOpen,
+    isBxMobile
   }
 }
 

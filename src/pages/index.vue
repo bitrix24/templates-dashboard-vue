@@ -1,68 +1,83 @@
 <script setup lang="ts">
-import {computed, ref, shallowRef} from 'vue'
-import { sub } from 'date-fns'
+import type { B24Frame } from '@bitrix24/b24jssdk'
 import type { DropdownMenuItem } from '@bitrix24/b24ui-nuxt'
-import { useDashboard } from '../composables/useDashboard'
 import type { Period, Range } from '../types'
-import { useState } from '#imports'
+import { computed, ref, shallowRef } from 'vue'
+import { sub } from 'date-fns'
+import { useDashboard } from '../composables/useDashboard'
+
+import { useB24 } from '../composables/useB24'
 import Bell1Icon from '@bitrix24/b24icons-vue/main/Bell1Icon'
 import PlusLIcon from '@bitrix24/b24icons-vue/outline/PlusLIcon'
 import SendIcon from '@bitrix24/b24icons-vue/outline/SendIcon'
 import AddPersonIcon from '@bitrix24/b24icons-vue/outline/AddPersonIcon'
 
-const { isNotificationsSlideoverOpen } = useDashboard()
+const { isNotificationsSlideoverOpen, isBxMobile } = useDashboard()
+const b24Instance = useB24()
 
-const platform = useState<{
-  name?: 'web' | 'bitrix-mobile' | 'bitrix-desktop'
-  version?: string
-}>('platform', () => ({}))
+const $b24 = b24Instance.get() as B24Frame
 
-const isBxMobile = computed<boolean>(() => {
-  return platform.value.name === 'bitrix-mobile'
-})
-
-const items = [
-  [
-    {
-      label: 'New mail',
-      icon: SendIcon,
-      to: '/inbox'
-    },
-    {
-      label: 'New customer',
-      icon: AddPersonIcon,
-      to: '/customers'
-    }
-  ]
-] satisfies DropdownMenuItem[][]
 
 const range = shallowRef<Range>({
   start: sub(new Date(), { days: 14 }),
   end: new Date()
 })
 const period = ref<Period>('daily')
+
+const isUseB24 = computed<boolean>(() => {
+  return b24Instance.isInit()
+})
+
+const page = {
+  title: 'Home',
+  addButton: {
+    isOnlyBitrixMobile: false,
+    items: [
+      {
+        label: 'New mail',
+        icon: SendIcon,
+        to: '/inbox'
+      },
+      {
+        label: 'New customer',
+        icon: AddPersonIcon,
+        to: '/customers'
+      }
+    ] satisfies DropdownMenuItem[]
+  }
+}
+
+async function initPage() {
+  if (!isUseB24.value) {
+    return
+  }
+
+  $b24.parent.setTitle(page.title)
+}
+
+await initPage()
 </script>
 
 <template>
   <B24DashboardPanel id="home">
     <template #header>
-      <B24DashboardNavbar title="Home" :b24ui="{ right: 'gap-3' }">
+      <B24DashboardNavbar :title="page.title" :b24ui="{ right: 'gap-3' }">
         <template #right>
-          <B24Tooltip text="Notifications" :shortcuts="['N']">
+          <B24Tooltip text="Notifications" :kbds="['N']">
             <B24Button
               class=""
-              color="air-tertiary"
+              color="air-tertiary-no-accent"
               @click="isNotificationsSlideoverOpen = true"
             >
-              <B24Chip color="air-primary-alert" inset>
+              <B24Chip color="air-primary-alert">
                 <Bell1Icon class="size-7 shrink-0" />
               </B24Chip>
             </B24Button>
           </B24Tooltip>
 
           <B24DropdownMenu
-            v-if="isBxMobile"
-            :items="items"
+            v-if="!page.addButton.isOnlyBitrixMobile || (page.addButton.isOnlyBitrixMobile && isBxMobile)"
+            :items="page.addButton.items"
             :content="{ align: 'end' }"
           >
             <B24Button
@@ -75,7 +90,7 @@ const period = ref<Period>('daily')
         </template>
       </B24DashboardNavbar>
 
-      <B24DashboardToolbar>
+      <B24DashboardToolbar class="scrollbar-thin">
         <template #left>
           <!-- NOTE: The `-ms-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
           <HomeDateRangePicker v-model="range" class="-ms-1" />

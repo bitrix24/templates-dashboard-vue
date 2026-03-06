@@ -3,47 +3,51 @@ import { useFetch, formatTimeAgo } from '@vueuse/core'
 import { useDashboard } from '../composables/useDashboard'
 import type { Notification } from '../types'
 
-const { isNotificationsSlideoverOpen } = useDashboard()
+const { isNotificationsSlideoverOpen, isBxMobile } = useDashboard()
 
-const { data: notifications } = useFetch('https://dashboard-template.nuxt.dev/api/notifications', { initialData: [] }).json<Notification[]>()
+const { data: notifications } = useFetch('/api/notifications.json', { initialData: [] }).json<Notification[]>()
 </script>
 
 <template>
   <B24Slideover
     v-model:open="isNotificationsSlideoverOpen"
     title="Notifications"
+    :inset="isBxMobile"
+    :b24ui="{
+      content: 'sm:max-w-[470px]',
+    }"
   >
     <template #body>
       <RouterLink
         v-for="notification in notifications"
         :key="notification.id"
         :to="`/inbox?id=${notification.id}`"
-        class="px-3 py-2.5 rounded-md hover:bg-elevated/50 flex items-center gap-3 relative -mx-3 first:-mt-3 last:-mb-3"
+        class="-ms-[20px] -me-[20px] first:-mt-3 last:-mb-3 relative flex items-start px-3 py-2 hover:bg-(--ui-color-bg-content-secondary) border-b border-(--ui-color-divider-default) last:border-b-0"
       >
         <B24Chip
-          color="error"
+          color="air-primary-alert"
           :show="!!notification.unread"
           inset
         >
           <B24Avatar
             v-bind="notification.sender.avatar"
             :alt="notification.sender.name"
-            size="md"
+            size="lg"
+            class="flex-shrink-0 mt-0.5"
           />
         </B24Chip>
-
-        <div class="text-sm flex-1">
-          <p class="flex items-center justify-between">
-            <span class="text-highlighted font-medium">{{ notification.sender.name }}</span>
-
+        <div class="ms-2 flex-grow overflow-hidden">
+          <div class="flex justify-between items-baseline">
+            <ProseH6 class="mb-0 truncate text-(--b24ui-typography-label-color) font-bold">
+              {{ notification.sender.name }}
+            </ProseH6>
             <time
               :datetime="notification.date"
-              class="text-muted text-xs"
+              class="text-(length:--ui-font-size-xs) text-(--b24ui-typography-description-color)"
               v-text="formatTimeAgo(new Date(notification.date))"
             />
-          </p>
-
-          <p class="text-dimmed">
+          </div>
+          <p class="text-sm text-(--b24ui-typography-description-color) text-pretty mt-0.5">
             {{ notification.body }}
           </p>
         </div>

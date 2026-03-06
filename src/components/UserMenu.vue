@@ -2,8 +2,9 @@
 import type { B24Frame } from '@bitrix24/b24jssdk'
 import type { DropdownMenuItem } from '@bitrix24/b24ui-nuxt'
 import { computed } from 'vue'
-import { useColorMode, useState } from '#imports'
+import { useColorMode } from '#imports'
 import { useB24 } from '../composables/useB24'
+import { useDashboard } from '../composables/useDashboard'
 import { TypeSpecificUrl } from '@bitrix24/b24jssdk'
 import Expand1Icon from '@bitrix24/b24icons-vue/actions/Expand1Icon'
 import PersonSettingsIcon from '@bitrix24/b24icons-vue/outline/PersonSettingsIcon'
@@ -21,14 +22,10 @@ defineProps<{
 const toast = useToast()
 const colorMode = useColorMode()
 const b24Instance = useB24()
+const { isBxMobile } = useDashboard()
 
 const $b24 = b24Instance.get() as B24Frame
 const b24Helper = b24Instance.getHelper()
-
-const platform = useState<{
-  name?: 'web' | 'bitrix-mobile' | 'bitrix-desktop'
-  version?: string
-}>('platform', () => ({}))
 
 const user = computed(() => {
   const def = {
@@ -55,10 +52,6 @@ const user = computed(() => {
   }
 
   return def
-})
-
-const isBxMobile = computed<boolean>(() => {
-  return platform.value.name === 'bitrix-mobile'
 })
 
 const isUseB24 = computed<boolean>(() => {

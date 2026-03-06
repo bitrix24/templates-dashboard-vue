@@ -181,8 +181,9 @@ onMounted(() => {
       resizable
       class="bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-01) backdrop-blur-md"
       :b24ui="{
-        header: 'ps-4 pe-2.5',
-        footer: 'lg:border-t lg:border-(--ui-color-divider-default)'
+        header: 'ps-4 pe-4',
+        body: 'ps-4 pe-4',
+        footer: 'ps-4 pe-4 lg:border-t lg:border-(--ui-color-divider-default)'
       }"
     >
       <template #header="{ collapsed }">
@@ -191,7 +192,7 @@ onMounted(() => {
       </template>
 
       <template #default="{ collapsed }">
-        <B24DashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-(--ui-color-divider-default) ms-4" />
+        <B24DashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-(--ui-color-divider-default)" />
 
         <B24NavigationMenu
           :collapsed="collapsed"
@@ -199,6 +200,7 @@ onMounted(() => {
           orientation="vertical"
           tooltip
           popover
+          :b24ui="{ root: 'ps-0 rtl:pe-0 pe-0' }"
         />
 
         <B24NavigationMenu
@@ -207,6 +209,7 @@ onMounted(() => {
           orientation="vertical"
           tooltip
           class="mt-auto"
+          :b24ui="{ root: 'ps-0 rtl:pe-0 pe-0' }"
         />
       </template>
 

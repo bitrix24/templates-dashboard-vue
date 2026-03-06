@@ -1,23 +1,16 @@
 <script setup lang="ts">
 import type { Result } from '@bitrix24/b24jssdk'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useB24 } from './composables/useB24'
-import { useState } from '#imports'
+import { useDashboard } from './composables/useDashboard.ts'
 import { sleepAction } from './utils'
 import CloudErrorIcon from '@bitrix24/b24icons-vue/main/CloudErrorIcon'
 
 const toast = useToast()
 const b24Instance = useB24()
+const { isBxMobile } = useDashboard()
 
 const isLoading = ref(true)
-
-const platform = useState<{
-  name?: 'web' | 'bitrix-mobile' | 'bitrix-desktop'
-  version?: string
-}>('platform', () => ({}))
-const isBxMobile = computed<boolean>(() => {
-  return platform.value.name === 'bitrix-mobile'
-})
 
 const toaster = { position: isBxMobile.value ? 'bottom-center' : 'top-right' }
 
