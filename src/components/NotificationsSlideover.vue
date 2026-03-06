@@ -5,7 +5,7 @@ import type { Notification } from '../types'
 
 const { isNotificationsSlideoverOpen, isBxMobile } = useDashboard()
 
-const { data: notifications } = useFetch('/api/notifications.json', { initialData: [] }).json<Notification[]>()
+const { data: notifications } = useFetch('https://bitrix24.github.io/templates-dashboard-vue/api/notifications.json', { initialData: [] }).json<Notification[]>()
 </script>
 
 <template>
