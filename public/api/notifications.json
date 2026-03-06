@@ -6,7 +6,7 @@
       "name": "Ethan Williams",
       "email": "ethan.williams@example.com",
       "avatar": {
-        "src": "/avatar/employee.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/employee.png"
       }
     },
     "body": "Your order #12345 has been confirmed and is being prepared for shipment.",
@@ -17,7 +17,7 @@
     "sender": {
       "name": "Mia White",
       "avatar": {
-        "src": "/avatar/assistant.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/assistant.png"
       }
     },
     "body": "We need your approval for the bulk purchase request from client XYZ.",
@@ -40,7 +40,7 @@
     "sender": {
       "name": "Ethan Williams",
       "avatar": {
-        "src": "/avatar/employee.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/employee.png"
       }
     },
     "body": "Payment of $2,500 has been successfully received. Thank you for your business!",
@@ -51,7 +51,7 @@
     "sender": {
       "name": "Olivia Martinez",
       "avatar": {
-        "src": "/avatar/assistant.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/assistant.png"
       }
     },
     "body": "Your subscription to Premium plan has been renewed for another month.",
@@ -75,7 +75,7 @@
       "name": "Noah Harris",
       "email": "noah.harris@example.com",
       "avatar": {
-        "src": "/avatar/employee.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/employee.png"
       }
     },
     "body": "Reminder: Follow up with client about the proposal sent yesterday.",
@@ -87,7 +87,7 @@
       "name": "Charlotte Martin",
       "email": "charlotte.martin@example.com",
       "avatar": {
-        "src": "/avatar/assistant.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/assistant.png"
       }
     },
     "body": "The deal with Global Tech has been closed. Congratulations on the sale!",
@@ -110,7 +110,7 @@
     "sender": {
       "name": "Liam Thomas",
       "avatar": {
-        "src": "/avatar/employee.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/employee.png"
       }
     },
     "body": "Your refund request has been processed and will reflect in 3-5 business days.",
@@ -121,7 +121,7 @@
     "sender": {
       "name": "Amelia Robinson",
       "avatar": {
-        "src": "/avatar/assistant.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/assistant.png"
       }
     },
     "body": "The product demo scheduled for tomorrow at 10 AM has been confirmed.",
@@ -144,7 +144,7 @@
       "name": "Lucas Walker",
       "email": "lucas.walker@example.com",
       "avatar": {
-        "src": "/avatar/employee.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/employee.png"
       }
     },
     "body": "Your quote #Q-789 has been approved by the client. Proceed with order.",
@@ -156,7 +156,7 @@
       "name": "Mia White",
       "email": "mia.white@example.com",
       "avatar": {
-        "src": "/avatar/assistant.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/assistant.png"
       }
     },
     "body": "Stock alert: Item #XYZ-123 is back in stock. You can place an order now.",
@@ -178,7 +178,7 @@
     "sender": {
       "name": "Mason Lewis",
       "avatar": {
-        "src": "/avatar/employee.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/employee.png"
       }
     },
     "body": "Meeting with sales team rescheduled to 3 PM today in Conference Room B.",
@@ -189,7 +189,7 @@
     "sender": {
       "name": "Sophia Anderson",
       "avatar": {
-        "src": "/avatar/assistant.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/assistant.png"
       }
     },
     "body": "Task 'Prepare quarterly sales report' has been completed by your team.",
@@ -212,7 +212,7 @@
       "name": "Ethan Williams",
       "email": "ethan.williams@example.com",
       "avatar": {
-        "src": "/avatar/employee.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/employee.png"
       }
     },
     "body": "New comment on your proposal from John Doe: 'Looks good, let's schedule a call'.",
@@ -224,7 +224,7 @@
       "name": "Charlotte Martin",
       "email": "charlotte.martin@example.com",
       "avatar": {
-        "src": "/avatar/assistant.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/assistant.png"
       }
     },
     "body": "Order #5678 has been shipped. Tracking number: 1Z999AA10123456784.",
@@ -246,7 +246,7 @@
     "sender": {
       "name": "Elijah Thompson",
       "avatar": {
-        "src": "/avatar/employee.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/employee.png"
       }
     },
     "body": "A new document has been shared with you: Sales Contract for Client A.",
@@ -257,7 +257,7 @@
     "sender": {
       "name": "Isabella Jackson",
       "avatar": {
-        "src": "/avatar/assistant.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/assistant.png"
       }
     },
     "body": "Your monthly sales target has been updated. Check the dashboard.",
@@ -280,7 +280,7 @@
       "name": "Liam Thomas",
       "email": "liam.thomas@example.com",
       "avatar": {
-        "src": "/avatar/employee.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/employee.png"
       }
     },
     "body": "The proposal you sent has been viewed by the client 3 times today.",
@@ -292,7 +292,7 @@
       "name": "Mia White",
       "email": "mia.white@example.com",
       "avatar": {
-        "src": "/avatar/assistant.png"
+        "src": "https://bitrix24.github.io/templates-dashboard-vue/avatar/assistant.png"
       }
     },
     "body": "Congratulations! You've reached your quarterly sales goal.",
