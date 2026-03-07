@@ -16,17 +16,15 @@ const { isNotificationsSlideoverOpen, isBxMobile } = useDashboard()
 const b24Instance = useB24()
 
 const $b24 = b24Instance.get() as B24Frame
-
+const isUseB24 = computed<boolean>(() => {
+  return b24Instance.isInit()
+})
 
 const range = shallowRef<Range>({
   start: sub(new Date(), { days: 14 }),
   end: new Date()
 })
 const period = ref<Period>('daily')
-
-const isUseB24 = computed<boolean>(() => {
-  return b24Instance.isInit()
-})
 
 const page = {
   title: 'Home',
@@ -59,7 +57,7 @@ await initPage()
 </script>
 
 <template>
-  <B24DashboardPanel id="home">
+  <B24DashboardPanel id="home" :b24ui="{ body: 'p-4' }">
     <template #header>
       <B24DashboardNavbar :title="page.title" :b24ui="{ right: 'gap-3' }">
         <template #right>
@@ -90,10 +88,11 @@ await initPage()
         </template>
       </B24DashboardNavbar>
 
-      <B24DashboardToolbar class="scrollbar-thin">
+      <!-- @todo: after UI update fix :b24ui -->
+      <B24DashboardToolbar class="scrollbar-thin" :b24ui="{ root: 'sm:px-4' }">
         <template #left>
           <!-- NOTE: The `-ms-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
-          <HomeDateRangePicker v-model="range" class="-ms-1" />
+          <HomeDateRangePicker v-model="range" class="-ms-2" />
 
           <HomePeriodSelect v-model="period" :range="range" />
         </template>

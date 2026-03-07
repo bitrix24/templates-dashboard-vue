@@ -2,9 +2,11 @@
 import { computed } from 'vue'
 import { DateFormatter, getLocalTimeZone, CalendarDate, today } from '@internationalized/date'
 import type { Range } from '../../types'
+import CalendarIcon from '@bitrix24/b24icons-vue/outline/CalendarIcon'
+import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 
-// @todo add icons & colors & see template
-
+// @todo save selected in b24 user.options
+// @todo init locale from app b24 en-US or ru-RU
 const df = new DateFormatter('en-US', {
   dateStyle: 'medium'
 })
@@ -83,12 +85,13 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
 <template>
   <B24Popover :content="{ align: 'start' }" :modal="true">
     <B24Button
-      color="neutral"
-      variant="ghost"
-      ddd-icon="i-lucide-calendar"
-      class="data-[state=open]:bg-elevated group"
+      use-dropdown
+      color="air-tertiary"
+      :icon="CalendarIcon"
+      class="group data-[state=open]:bg-(--ui-btn-background-hover) w-[250px]"
+      :b24ui="{ label: 'flex-1' }"
     >
-      <span class="truncate">
+      <span class="flex-1 text-start truncate">
         <template v-if="selected.start">
           <template v-if="selected.end">
             {{ df.format(selected.start) }} - {{ df.format(selected.end) }}
@@ -101,22 +104,21 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
           Pick a date
         </template>
       </span>
-
       <template #trailing>
-        <div name="i-lucide-chevron-down" class="shrink-0 text-dimmed size-5 group-data-[state=open]:rotate-180 transition-transform duration-200" />
+        <ChevronDownLIcon class="size-5 shrink-0 text-description group-data-[state=open]:rotate-180 transition-transform duration-200" />
       </template>
     </B24Button>
 
     <template #content>
-      <div class="flex items-stretch sm:divide-x divide-default">
+      <div class="flex items-stretch sm:divide-x divide-(--ui-color-divider-default)">
         <div class="hidden sm:flex flex-col justify-center">
           <B24Button
             v-for="(range, index) in ranges"
             :key="index"
             :label="range.label"
-            color="neutral"
+            color="air-tertiary"
             class="rounded-none px-4"
-            :class="[isRangeSelected(range) ? 'bg-elevated' : 'hover:bg-elevated/50']"
+            :class="[isRangeSelected(range) ? 'bg-(--ui-btn-background-hover)' : 'hover:bg-(--ui-btn-background-hover)']"
             truncate
             @click="selectRange(range)"
           />

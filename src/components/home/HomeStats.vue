@@ -2,14 +2,20 @@
 import { ref, watch } from 'vue'
 import { randomInt } from '../../utils'
 import type { Period, Range, Stat } from '../../types'
-
-// @todo add icons & colors & see template
+import ShoppingCartIcon from '@bitrix24/b24icons-vue/outline/ShoppingCartIcon'
+import WalletIcon from '@bitrix24/b24icons-vue/outline/WalletIcon'
+import GraphsDiagramIcon from '@bitrix24/b24icons-vue/outline/GraphsDiagramIcon'
+import ContactIcon from '@bitrix24/b24icons-vue/outline/ContactIcon'
+import TrendUpIcon from '@bitrix24/b24icons-vue/outline/TrendUpIcon'
+import TrendDownIcon from '@bitrix24/b24icons-vue/outline/TrendDownIcon'
 
 const props = defineProps<{
   period: Period
   range: Range
 }>()
 
+// @todo init locale from app b24 en-US or ru-RU
+// @todo init base currency from app USD RUB BYN
 function formatCurrency(value: number): string {
   return value.toLocaleString('en-US', {
     style: 'currency',
@@ -21,7 +27,7 @@ function formatCurrency(value: number): string {
 const baseStats = [
   {
     title: 'Customers',
-    // icon: 'i-lucide-users',
+    icon: ContactIcon,
     minValue: 400,
     maxValue: 1000,
     minVariation: -15,
@@ -29,7 +35,7 @@ const baseStats = [
   },
   {
     title: 'Conversions',
-    // icon: 'i-lucide-chart-pie',
+    icon: GraphsDiagramIcon,
     minValue: 1000,
     maxValue: 2000,
     minVariation: -10,
@@ -37,7 +43,7 @@ const baseStats = [
   },
   {
     title: 'Revenue',
-    // icon: 'i-lucide-circle-dollar-sign',
+    icon: WalletIcon,
     minValue: 200000,
     maxValue: 500000,
     minVariation: -20,
@@ -46,7 +52,7 @@ const baseStats = [
   },
   {
     title: 'Orders',
-    // icon: 'i-lucide-shopping-cart',
+    icon: ShoppingCartIcon,
     minValue: 100,
     maxValue: 300,
     minVariation: -5,
@@ -63,7 +69,7 @@ watch([() => props.period, () => props.range], () => {
 
     return {
       title: stat.title,
-      // icon: stat.icon,
+      icon: stat.icon,
       value: stat.formatter ? stat.formatter(value) : value,
       variation
     }
@@ -72,31 +78,33 @@ watch([() => props.period, () => props.range], () => {
 </script>
 
 <template>
-  <B24PageGrid class="lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-px">
+  <B24PageGrid class="lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-0">
     <B24PageCard
       v-for="(stat, index) in stats"
       :key="index"
-      dd-:icon="stat.icon"
+      :icon="stat.icon"
       :title="stat.title"
       to="/customers"
-      variant="subtle"
+      variant="tinted-alt"
       :b24ui="{
+        root: 'bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-01) backdrop-blur-md',
         container: 'gap-y-1.5',
         wrapper: 'items-start',
         leading: 'p-2.5 rounded-full bg-primary/10 ring ring-inset ring-primary/25',
-        title: 'font-normal text-muted text-xs uppercase'
+        title: 'text-description font-normal text-xs uppercase'
       }"
-      class="lg:rounded-none first:rounded-l-lg last:rounded-r-lg hover:z-1"
+      class="lg:rounded-none first:rounded-l-lg last:rounded-r-lg hover:z-1 lg:border-r lg:last:border-r-0 lg:border-(--ui-color-divider-default)"
     >
       <div class="flex items-center gap-2">
-        <span class="text-2xl font-semibold text-highlighted">
+        <!-- @todo: fix text-[length:24px] -->
+        <span class="text-[length:24px] font-semibold text-label">
           {{ stat.value }}
         </span>
 
         <B24Badge
-          :color="stat.variation > 0 ? 'success' : 'error'"
-          variant="subtle"
-          class="text-xs"
+          :icon="stat.variation > 0 ? TrendUpIcon : TrendDownIcon"
+          size="md"
+          :color="stat.variation > 0 ? 'air-primary-success' : 'air-primary-alert'"
         >
           {{ stat.variation > 0 ? '+' : '' }}{{ stat.variation }}%
         </B24Badge>
