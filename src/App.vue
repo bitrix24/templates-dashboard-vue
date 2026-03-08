@@ -25,9 +25,8 @@ onMounted(async () => {
     })
   }
 
-  // use this for show ConnectLoader
-  // @todo remove this
-  await sleepAction(2000)
+  // Used to display the connection loading indicator
+  await sleepAction(1000)
   isLoading.value = false
 })
 </script>

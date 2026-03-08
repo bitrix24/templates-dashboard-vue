@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import type { B24Frame } from '@bitrix24/b24jssdk'
 import type { DropdownMenuItem } from '@bitrix24/b24ui-nuxt'
-import type { Period, Range } from '../types'
-import { computed, ref, shallowRef } from 'vue'
-import { sub } from 'date-fns'
+import { computed } from 'vue'
+import { useDealStats } from '../composables/useDealStats'
 import { useDashboard } from '../composables/useDashboard'
-
 import { useB24 } from '../composables/useB24'
 import Bell1Icon from '@bitrix24/b24icons-vue/main/Bell1Icon'
 import PlusLIcon from '@bitrix24/b24icons-vue/outline/PlusLIcon'
 import SendIcon from '@bitrix24/b24icons-vue/outline/SendIcon'
 import AddPersonIcon from '@bitrix24/b24icons-vue/outline/AddPersonIcon'
+import DatabaseIcon from '@bitrix24/b24icons-vue/outline/DatabaseIcon'
+
+const { period, range, loadDeals } = useDealStats()
 
 const { isNotificationsSlideoverOpen, isBxMobile } = useDashboard()
 const b24Instance = useB24()
@@ -19,12 +20,6 @@ const $b24 = b24Instance.get() as B24Frame
 const isUseB24 = computed<boolean>(() => {
   return b24Instance.isInit()
 })
-
-const range = shallowRef<Range>({
-  start: sub(new Date(), { days: 14 }),
-  end: new Date()
-})
-const period = ref<Period>('daily')
 
 const page = {
   title: 'Home',
@@ -46,6 +41,7 @@ const page = {
 }
 
 async function initPage() {
+  await loadDeals()
   if (!isUseB24.value) {
     return
   }
@@ -92,7 +88,17 @@ await initPage()
       <B24DashboardToolbar class="scrollbar-thin" :b24ui="{ root: 'sm:px-4' }">
         <template #left>
           <!-- NOTE: The `-ms-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
-          <HomeDateRangePicker v-model="range" class="-ms-2" />
+          <B24Button
+            :icon="DatabaseIcon"
+            label="Load data"
+            color="air-secondary-accent-2"
+            class="-ms-2"
+            size="sm"
+            loading-auto
+            @click="loadDeals"
+          />
+
+          <HomeDateRangePicker v-model="range" />
 
           <HomePeriodSelect v-model="period" :range="range" />
         </template>
@@ -100,9 +106,9 @@ await initPage()
     </template>
 
     <template #body>
-      <HomeStats :period="period" :range="range" />
-      <HomeChart :period="period" :range="range" />
-      <HomeSales :period="period" :range="range" />
+      <HomeStats />
+      <HomeChart />
+      <HomeSales />
     </template>
   </B24DashboardPanel>
 </template>

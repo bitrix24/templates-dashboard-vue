@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { DateFormatter, getLocalTimeZone, CalendarDate, today } from '@internationalized/date'
 import type { Range } from '../../types'
+import { computed } from 'vue'
+import { useDealStats } from '../../composables/useDealStats'
+import { getLocalTimeZone, CalendarDate, today } from '@internationalized/date'
 import CalendarIcon from '@bitrix24/b24icons-vue/outline/CalendarIcon'
 import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 
-// @todo save selected in b24 user.options
-// @todo init locale from app b24 en-US or ru-RU
-const df = new DateFormatter('en-US', {
-  dateStyle: 'medium'
-})
+const { formatDate, isLoading } = useDealStats()
 
 const selected = defineModel<Range>({ required: true })
 
@@ -88,16 +85,17 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
       use-dropdown
       color="air-tertiary"
       :icon="CalendarIcon"
-      class="group data-[state=open]:bg-(--ui-btn-background-hover) w-[250px]"
+      class="group data-[state=open]:bg-(--ui-btn-background-hover)"
       :b24ui="{ label: 'flex-1' }"
+      :disabled="isLoading"
     >
       <span class="flex-1 text-start truncate">
         <template v-if="selected.start">
           <template v-if="selected.end">
-            {{ df.format(selected.start) }} - {{ df.format(selected.end) }}
+            {{ formatDate.format(selected.start) }} - {{ formatDate.format(selected.end) }}
           </template>
           <template v-else>
-            {{ df.format(selected.start) }}
+            {{ formatDate.format(selected.start) }}
           </template>
         </template>
         <template v-else>

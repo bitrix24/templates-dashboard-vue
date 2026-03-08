@@ -1,5 +1,4 @@
 import './assets/css/main.css'
-
 import { createApp } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'

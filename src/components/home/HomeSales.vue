@@ -1,45 +1,15 @@
 <script setup lang="ts">
-import { h, resolveComponent, ref, watch } from 'vue'
 import type { TableColumn } from '@bitrix24/b24ui-nuxt'
-import { randomInt, randomFrom } from '../../utils'
-import type { Period, Range, Sale } from '../../types'
+import type { TableMeta, Row } from '@tanstack/vue-table'
+import { h, resolveComponent } from 'vue'
+import { useDealStats } from '../../composables/useDealStats'
+import type { Sale } from '../../types'
+import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 
-const props = defineProps<{
-  period: Period
-  range: Range
-}>()
-
+const { salesData, isLoading, formatCurrency, formatDateShort, openDeal, getDealUrl } = useDealStats()
 const B24Badge = resolveComponent('B24Badge')
-
-const sampleEmails = [
-  'james.anderson@example.com',
-  'mia.white@example.com',
-  'william.brown@example.com',
-  'emma.davis@example.com',
-  'ethan.harris@example.com'
-]
-
-const data = ref<Sale[]>([])
-
-watch([() => props.period, () => props.range], () => {
-  const sales: Sale[] = []
-  const currentDate = new Date()
-
-  for (let i = 0; i < 5; i++) {
-    const hoursAgo = randomInt(0, 48)
-    const date = new Date(currentDate.getTime() - hoursAgo * 3600000)
-
-    sales.push({
-      id: (4600 - i).toString(),
-      date: date.toISOString(),
-      status: randomFrom(['paid', 'failed', 'refunded']),
-      email: randomFrom(sampleEmails),
-      amount: randomInt(100, 1000)
-    })
-  }
-
-  data.value = sales.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-}, { immediate: true })
+const B24Button = resolveComponent('B24Button')
+const B24Link = resolveComponent('B24Link')
 
 const columns: TableColumn<Sale>[] = [
   {
@@ -48,16 +18,36 @@ const columns: TableColumn<Sale>[] = [
     cell: ({ row }) => `#${row.getValue('id')}`
   },
   {
-    accessorKey: 'date',
-    header: 'Date',
+    accessorKey: 'begindate',
+    header: 'Begin date',
     cell: ({ row }) => {
-      return new Date(row.getValue('date')).toLocaleString('en-US', {
-        day: 'numeric',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      })
+      return formatDateShort(new Date(row.getValue('begindate')))
+    }
+  },
+  {
+    accessorKey: 'closedate',
+    header: () => {
+      return h(
+        B24Button,
+        {
+          color: 'air-tertiary-no-accent',
+          label: 'Close date',
+          size: 'sm',
+          class: '-mx-2.5 [--ui-btn-height:20px]',
+        },
+        {
+          trailing: () =>
+            h(ChevronDownLIcon, {
+              class: 'text-(--ui-btn-color) shrink-0 size-(--ui-btn-icon-size)'
+            })
+        }
+      )
+    },
+    cell: ({ row }) => {
+      const value = row.getValue('closedate')
+      if (value) {
+        return formatDateShort(new Date(`${value}`))
+      }
     }
   },
   {
@@ -65,45 +55,74 @@ const columns: TableColumn<Sale>[] = [
     header: 'Status',
     cell: ({ row }) => {
       const color = {
-        paid: 'success' as const,
-        failed: 'error' as const,
-        refunded: 'neutral' as const
+        success: 'air-primary-success' as const,
+        failed: 'air-primary-alert' as const,
+        processing: 'air-tertiary' as const
       }[row.getValue('status') as string]
 
-      return h(B24Badge, { class: 'capitalize', variant: 'subtle', color }, () =>
+      return h(B24Badge, { class: 'capitalize', color }, () =>
         row.getValue('status')
       )
     }
   },
   {
-    accessorKey: 'email',
-    header: 'Email'
+    accessorKey: 'title',
+    header: 'Title',
+    cell: ({ row }) => {
+      const isCanOpen = row.original.isCanOpen
+      if (!isCanOpen) {
+        return row.original.title
+      }
+      const handleClick = (e: Event) => {
+        e.preventDefault()
+        openDeal(row.original)
+      }
+
+      return h(B24Link, {
+        to: getDealUrl(row.original),
+        isAction: true,
+        onClick: handleClick,
+      }, {
+        default: () => row.original.title
+      })
+    }
   },
   {
     accessorKey: 'amount',
     header: () => h('div', { class: 'text-right' }, 'Amount'),
     cell: ({ row }) => {
       const amount = Number.parseFloat(row.getValue('amount'))
-
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(amount)
-
-      return h('div', { class: 'text-right font-medium' }, formatted)
+      return h('div', { class: 'text-right font-(--ui-font-weight-medium)' }, formatCurrency(amount))
     }
   }
 ]
+
+const meta: TableMeta<Sale> = {
+  class: {
+    tr: (row: Row<Sale>) => {
+      if (row.original.status === 'failed') {
+        return 'bg-red-600/20'
+      }
+      // if (row.original.status === 'success') {
+      //   return 'bg-green-550/20'
+      // }
+      return ''
+    }
+  }
+}
 </script>
 
 <template>
   <B24Table
-    :data="data"
+    :loading="isLoading"
+    loading-animation="elastic"
+    :data="salesData"
     :columns="columns"
+    :meta="meta"
     class="shrink-0"
     :b24ui="{
       base: 'table-fixed border-separate border-spacing-0',
-      thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
+      thead: '[&>tr]:bg-(--ui-color-bg-content-secondary) [&>tr]:after:content-none',
       tbody: '[&>tr]:last:[&>td]:border-b-0',
       th: 'first:rounded-l-lg last:rounded-r-lg border-y border-(--ui-color-divider-default) first:border-l last:border-r',
       td: 'border-b border-(--ui-color-divider-default)'

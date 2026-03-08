@@ -1,86 +1,15 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { randomInt } from '../../utils'
-import type { Period, Range, Stat } from '../../types'
-import ShoppingCartIcon from '@bitrix24/b24icons-vue/outline/ShoppingCartIcon'
-import WalletIcon from '@bitrix24/b24icons-vue/outline/WalletIcon'
-import GraphsDiagramIcon from '@bitrix24/b24icons-vue/outline/GraphsDiagramIcon'
-import ContactIcon from '@bitrix24/b24icons-vue/outline/ContactIcon'
+import { useDealStats } from '../../composables/useDealStats'
 import TrendUpIcon from '@bitrix24/b24icons-vue/outline/TrendUpIcon'
 import TrendDownIcon from '@bitrix24/b24icons-vue/outline/TrendDownIcon'
 
-const props = defineProps<{
-  period: Period
-  range: Range
-}>()
-
-// @todo init locale from app b24 en-US or ru-RU
-// @todo init base currency from app USD RUB BYN
-function formatCurrency(value: number): string {
-  return value.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0
-  })
-}
-
-const baseStats = [
-  {
-    title: 'Customers',
-    icon: ContactIcon,
-    minValue: 400,
-    maxValue: 1000,
-    minVariation: -15,
-    maxVariation: 25
-  },
-  {
-    title: 'Conversions',
-    icon: GraphsDiagramIcon,
-    minValue: 1000,
-    maxValue: 2000,
-    minVariation: -10,
-    maxVariation: 20
-  },
-  {
-    title: 'Revenue',
-    icon: WalletIcon,
-    minValue: 200000,
-    maxValue: 500000,
-    minVariation: -20,
-    maxVariation: 30,
-    formatter: formatCurrency
-  },
-  {
-    title: 'Orders',
-    icon: ShoppingCartIcon,
-    minValue: 100,
-    maxValue: 300,
-    minVariation: -5,
-    maxVariation: 15
-  }
-]
-
-const stats = ref<Stat[]>([])
-
-watch([() => props.period, () => props.range], () => {
-  stats.value = baseStats.map((stat) => {
-    const value = randomInt(stat.minValue, stat.maxValue)
-    const variation = randomInt(stat.minVariation, stat.maxVariation)
-
-    return {
-      title: stat.title,
-      icon: stat.icon,
-      value: stat.formatter ? stat.formatter(value) : value,
-      variation
-    }
-  })
-}, { immediate: true })
+const { statsData } = useDealStats()
 </script>
 
 <template>
   <B24PageGrid class="lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-0">
     <B24PageCard
-      v-for="(stat, index) in stats"
+      v-for="(stat, index) in statsData"
       :key="index"
       :icon="stat.icon"
       :title="stat.title"

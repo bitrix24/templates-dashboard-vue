@@ -15,6 +15,7 @@
     "@bitrix24/b24jssdk":"^1.0.4",
     "@internationalized/date": "^3.11.0",
     "@tanstack/table-core": "^8.21.3",
+    "@tanstack/vue-table": "^8.21.3",
     "@unovis/ts": "^1.6.4",
     "@unovis/vue": "^1.6.4",
     "@vueuse/core": "^14.2.1",

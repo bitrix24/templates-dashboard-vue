@@ -1,7 +1,9 @@
-import type { AvatarProps } from '@bitrix24/b24ui-nuxt'
+import type { AvatarProps, IconComponent } from '@bitrix24/b24ui-nuxt'
+import type { ISODate } from '@bitrix24/b24jssdk'
 
 export type UserStatus = 'subscribed' | 'unsubscribed' | 'bounced'
-export type SaleStatus = 'paid' | 'failed' | 'refunded'
+export type SaleStatus = 'success' | 'failed' | 'processing'
+export type Semantic = 'P' | 'S' | 'F'
 
 export interface User {
   id: number
@@ -30,18 +32,21 @@ export interface Member {
 
 export interface Stat {
   title: string
-  // icon: string
+  icon: IconComponent
   value: number | string
   variation: number
   formatter?: (value: number) => string
 }
 
 export interface Sale {
-  id: string
-  date: string
+  id: number
+  begindate: string
+  closedate: null | string
   status: SaleStatus
-  email: string
+  title: string
   amount: number
+  stageSemanticId: Semantic
+  isCanOpen: boolean
 }
 
 export interface Notification {
@@ -57,4 +62,20 @@ export type Period = 'daily' | 'weekly' | 'monthly'
 export interface Range {
   start: Date
   end: Date
+}
+
+export type DataRecord = {
+  date: Date
+  amount: number
+}
+
+export type Deal = {
+  id: number
+  contactId: number
+  companyId: number
+  title: string
+  begindate: ISODate
+  closedate: ISODate
+  opportunity: number
+  stageSemanticId: Semantic
 }

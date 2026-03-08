@@ -1,63 +1,31 @@
 <script setup lang="ts">
-import { computed, useTemplateRef, ref, watch } from 'vue'
-import { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, format } from 'date-fns'
+import { computed, useTemplateRef } from 'vue'
 import { VisXYContainer, VisLine, VisAxis, VisArea, VisCrosshair, VisTooltip } from '@unovis/vue'
 import { useElementSize } from '@vueuse/core'
-import type { Period, Range } from '../../types'
+import type { DataRecord } from '../../types'
+import { useDealStats } from '../../composables/useDealStats.ts'
 
 const cardRef = useTemplateRef<HTMLElement | null>('cardRef')
 
-const props = defineProps<{
-  period: Period
-  range: Range
-}>()
-
-type DataRecord = {
-  date: Date
-  amount: number
-}
-
+const { chartData, formatDateByPeriod } = useDealStats()
 const { width } = useElementSize(cardRef)
-
-const data = ref<DataRecord[]>([])
-
-watch([() => props.period, () => props.range], () => {
-  const dates = ({
-    daily: eachDayOfInterval,
-    weekly: eachWeekOfInterval,
-    monthly: eachMonthOfInterval
-  } as Record<Period, typeof eachDayOfInterval>)[props.period](props.range)
-
-  const min = 1000
-  const max = 10000
-
-  data.value = dates.map(date => ({ date, amount: Math.floor(Math.random() * (max - min + 1)) + min }))
-}, { immediate: true })
 
 const x = (_: DataRecord, i: number) => i
 const y = (d: DataRecord) => d.amount
 
-const total = computed(() => data.value.reduce((acc: number, { amount }) => acc + amount, 0))
+const total = computed(() => chartData.value.reduce((acc: number, { amount }) => acc + amount, 0))
 
 const formatNumber = new Intl.NumberFormat('en', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format
 
-const formatDate = (date: Date): string => {
-  return ({
-    daily: format(date, 'd MMM'),
-    weekly: format(date, 'd MMM'),
-    monthly: format(date, 'MMM yyy')
-  })[props.period]
-}
-
 const xTicks = (i: number) => {
-  if (i === 0 || i === data.value.length - 1 || !data.value[i]) {
+  if (i === 0 || i === chartData.value.length - 1 || !chartData.value[i]) {
     return ''
   }
 
-  return formatDate(data.value[i].date)
+  return formatDateByPeriod(chartData.value[i].date)
 }
 
-const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amount)}`
+const template = (d: DataRecord) => `${formatDateByPeriod(d.date)}: ${formatNumber(d.amount)}`
 </script>
 
 <template>
@@ -74,7 +42,7 @@ const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amo
     </template>
 
     <VisXYContainer
-      :data="data"
+      :data="chartData"
       :padding="{ top: 40 }"
       class="h-96"
       :width="width"
