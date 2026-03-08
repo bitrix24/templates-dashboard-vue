@@ -1,9 +1,9 @@
 <template>
   <!-- @todo fix bg -->
   <!-- Main container: fixed screen height, no scrolling -->
-  <div class="flex flex-row h-screen bg-base-50 dark:bg-base-dark overflow-hidden">
+  <div class="flex flex-row h-screen  overflow-hidden">
     <!-- Sidebar: visible only on desktop -->
-    <aside class="hidden lg:flex flex-col w-[260px] shrink-0 border-r border-gray-100 dark:border-gray-800 bg-white dark:bg-white/5 p-5">
+    <aside class="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-(--ui-color-divider-default) bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-01) p-5">
       <div class="flex items-center gap-3 px-2 mb-8">
         <B24Skeleton accent="accent" class="size-8 rounded-lg" />
         <B24Skeleton accent="default" class="h-5 w-24" />
@@ -18,7 +18,7 @@
           </div>
         </div>
       </nav>
-      <div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center gap-3">
+      <div class="mt-auto pt-4 border-t border-(--ui-color-divider-default) flex items-center gap-3">
         <B24Skeleton accent="accent" class="size-9 rounded-full" />
         <div class="space-y-1.5">
           <B24Skeleton accent="default" class="h-3 w-16" />
@@ -41,7 +41,7 @@
       <!-- Stats blocks: grid-cols-1 on mobile (one below the other) -->
       <section class="grid grid-cols-1 lg:grid-cols-4 gap-3 md:gap-4 shrink-0">
         <!-- Always visible (2 blocks) -->
-        <div v-for="i in 2" :key="'v-' + i" class="bg-white dark:bg-white/5 p-3 md:p-4 rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm">
+        <div v-for="i in 2" :key="'v-' + i" class="bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-01) p-3 md:p-4 rounded-lg border border-(--ui-color-divider-default) shadow-sm">
           <div class="flex items-center gap-2 mb-2">
             <B24Skeleton accent="accent" class="size-5 shrink-0 rounded-full" />
             <B24Skeleton accent="less" class="h-3 w-16" />
@@ -52,7 +52,7 @@
           </div>
         </div>
         <!-- Visible only on desktop -->
-        <div v-for="i in 2" :key="'h-' + i" class="hidden lg:block bg-white dark:bg-white/5 p-4 rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm">
+        <div v-for="i in 2" :key="'h-' + i" class="hidden lg:block bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-01) p-4 rounded-lg border border-(--ui-color-divider-default) shadow-sm">
           <div class="flex items-center gap-2 mb-2">
             <B24Skeleton accent="accent" class="size-5 shrink-0 rounded-full" />
             <B24Skeleton accent="less" class="h-3 w-16" />
@@ -65,7 +65,7 @@
       </section>
 
       <!-- Data graph -->
-      <section class="flex-1 min-h-0 bg-white dark:bg-white/5 p-4 md:p-5 rounded-lg border border-gray-100 dark:border-gray-800 flex flex-col shadow-sm relative">
+      <section class="flex-1 min-h-0 bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-01) p-4 md:p-5 rounded-lg border border-(--ui-color-divider-default) flex flex-col shadow-sm relative">
         <div class="mb-3 shrink-0 space-y-2 relative z-10">
           <B24Skeleton accent="less" class="h-3 w-12" />
           <B24Skeleton accent="default" class="h-5 w-24" />
@@ -98,14 +98,14 @@
       </section>
 
       <!-- Table -->
-      <section class="flex-1 min-h-0 bg-white dark:bg-white/5 rounded-lg border border-gray-100 dark:border-gray-800 flex flex-col shadow-sm overflow-hidden">
-        <div class="p-3 border-b border-gray-100 dark:border-gray-800 flex justify-between shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
+      <section class="flex-1 min-h-0 bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-01) rounded-lg border border-(--ui-color-divider-default) flex flex-col shadow-sm overflow-hidden">
+        <div class="p-3 border-b border-(--ui-color-divider-default) flex justify-between shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
           <B24Skeleton accent="less" class="h-3 w-8" />
           <B24Skeleton accent="less" class="h-3 w-20" />
           <B24Skeleton accent="less" class="h-3 w-10" />
         </div>
         <div class="flex-1 overflow-hidden">
-          <div v-for="row in 5" :key="row" class="p-3 flex justify-between items-center border-b border-gray-50 dark:border-gray-900 last:border-0 gap-4">
+          <div v-for="row in 5" :key="row" class="p-3 flex justify-between items-center border-b border-(--ui-color-divider-default) last:border-0 gap-4">
             <B24Skeleton accent="default" class="h-3 w-8" />
             <B24Skeleton accent="less" class="h-3 w-20" />
             <B24Skeleton accent="default" class="h-3 w-12" />
