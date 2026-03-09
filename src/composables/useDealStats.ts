@@ -1,6 +1,7 @@
 import type { DataRecord, Period, Range, Stat, Sale, Deal } from '../types'
 import type { B24Frame } from "@bitrix24/b24jssdk";
 import type { SaleStatus, Semantic } from '../types'
+import * as locales from '@bitrix24/b24ui-nuxt/locale'
 import { EnumCrmEntityTypeId, Text, SdkError } from "@bitrix24/b24jssdk";
 import { ref, shallowRef, computed } from 'vue'
 import { createSharedComposable } from '@vueuse/core'
@@ -35,15 +36,31 @@ const _useDealStats = () => {
   const isUseB24 = computed<boolean>(() => {
     return b24Instance.isInit()
   })
+  const locale = ref<null | string>(null)
 
   // region formatters ////
-  // @todo fix this
   const localeCode = computed(() => {
-    if (typeof window !== 'undefined' && window.navigator?.language.includes('ru')) {
-      return 'ru-RU'
+    if(locale.value !== null) {
+      return locale.value
     }
 
-    return 'en-US'
+    if (isUseB24.value) {
+      locale.value = locales[$b24.getLang()]?.locale
+    }
+    if (
+      !locale.value
+      && typeof window !== 'undefined'
+      && window.navigator?.language.includes('ru')
+    ) {
+      locale.value = 'ru-RU'
+    }
+
+    if (!locale.value) {
+      locale.value = 'en-US'
+    }
+
+    $logger.debug('set locale', { locale: locale.value })
+    return locale.value
   })
 
   // @todo fix this
