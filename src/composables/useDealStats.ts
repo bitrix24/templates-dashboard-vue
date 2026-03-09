@@ -55,7 +55,7 @@ const _useDealStats = () => {
     return 'USD'
   })
 
-  const formatCurrency = (value: number, currencyId: string): string => {
+  const formatCurrency = (value: number, currencyId?: string): string => {
     return value.toLocaleString(localeCode.value, {
       style: 'currency',
       currency: currencyId ?? localeCurrency.value,
@@ -436,6 +436,8 @@ const _useDealStats = () => {
 
   return {
     loadDeals,
+    localeCode,
+    localeCurrency,
     range,
     period,
     statsData,
