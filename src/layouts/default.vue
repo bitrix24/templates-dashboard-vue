@@ -173,6 +173,7 @@ onMounted(() => {
 
 <template>
   <B24DashboardGroup unit="px" storage="local">
+    <!-- @todo: after UI update fix -->
     <B24DashboardSidebar
       id="default"
       v-model:open="open"
@@ -193,7 +194,7 @@ onMounted(() => {
 
       <template #default="{ collapsed }">
         <B24DashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-(--ui-color-divider-default)" />
-
+        <!-- @todo: after UI update fix -->
         <B24NavigationMenu
           :collapsed="collapsed"
           :items="links[0]"
@@ -202,7 +203,7 @@ onMounted(() => {
           popover
           :b24ui="{ root: 'ps-0 rtl:pe-0 pe-0' }"
         />
-
+        <!-- @todo: after UI update fix -->
         <B24NavigationMenu
           :collapsed="collapsed"
           :items="links[1]"
@@ -218,6 +219,7 @@ onMounted(() => {
       </template>
     </B24DashboardSidebar>
 
+    <!-- @todo: after UI update fix -->
     <B24DashboardSearch :groups="groups" :color-mode="false" />
 
     <RouterView />

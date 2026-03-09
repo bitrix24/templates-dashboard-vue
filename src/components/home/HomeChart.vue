@@ -7,15 +7,13 @@ import { useDealStats } from '../../composables/useDealStats.ts'
 
 const cardRef = useTemplateRef<HTMLElement | null>('cardRef')
 
-const { chartData, formatDateByPeriod } = useDealStats()
+const { chartData, formatDateByPeriod, formatCurrency } = useDealStats()
 const { width } = useElementSize(cardRef)
 
 const x = (_: DataRecord, i: number) => i
 const y = (d: DataRecord) => d.amount
 
 const total = computed(() => chartData.value.reduce((acc: number, { amount }) => acc + amount, 0))
-
-const formatNumber = new Intl.NumberFormat('en', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format
 
 const xTicks = (i: number) => {
   if (i === 0 || i === chartData.value.length - 1 || !chartData.value[i]) {
@@ -25,7 +23,7 @@ const xTicks = (i: number) => {
   return formatDateByPeriod(chartData.value[i].date)
 }
 
-const template = (d: DataRecord) => `${formatDateByPeriod(d.date)}: ${formatNumber(d.amount)}`
+const template = (d: DataRecord) => `${formatDateByPeriod(d.date)}: ${formatCurrency(d.amount)}`
 </script>
 
 <template>
@@ -36,7 +34,7 @@ const template = (d: DataRecord) => `${formatDateByPeriod(d.date)}: ${formatNumb
           Revenue
         </p>
         <p class="text-3xl text-(--b24ui-typography-legend-color) font-semibold">
-          {{ formatNumber(total) }}
+          {{ formatCurrency(total) }}
         </p>
       </div>
     </template>

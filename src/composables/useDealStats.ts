@@ -4,8 +4,7 @@ import type { SaleStatus, Semantic } from '../types'
 import { EnumCrmEntityTypeId, Text, SdkError } from "@bitrix24/b24jssdk";
 import { ref, shallowRef, computed } from 'vue'
 import { createSharedComposable } from '@vueuse/core'
-import { DateFormatter } from '@internationalized/date'
-import { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, sub, format } from 'date-fns'
+import { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, sub } from 'date-fns'
 import {randomFrom, randomInt} from '../utils'
 import { useB24 } from './useB24'
 import ContactIcon from '@bitrix24/b24icons-vue/outline/ContactIcon'
@@ -18,12 +17,10 @@ import ShoppingCartIcon from '@bitrix24/b24icons-vue/outline/ShoppingCartIcon'
  * @todo save selected period in b24 user.options || localStorage
  * @todo save stats in b24 user.options || localStorage
  * @todo init locale from app b24 en-US or ru-RU
- * @todo init base currency from app USD RUB BYN
- * @todo init locale from app b24 en-US or ru-RU
  */
 const _useDealStats = () => {
   const range = shallowRef<Range>({
-    start: sub(new Date(), { days: 14 }),
+    start: sub(new Date(), { days: 7 }),
     end: new Date()
   })
   const period = ref<Period>('daily')
@@ -33,35 +30,65 @@ const _useDealStats = () => {
   const loading = ref<boolean>(false)
 
   const b24Instance = useB24()
+  const $logger = b24Instance.buildLogger('useDealStats')
   const $b24 = b24Instance.get() as B24Frame
   const isUseB24 = computed<boolean>(() => {
     return b24Instance.isInit()
   })
-  const $logger = b24Instance.buildLogger('useDealStats')
 
   // region formatters ////
-  const formatCurrency = (value: number): string => {
-    return value.toLocaleString('en-US', {
+  // @todo fix this
+  const localeCode = computed(() => {
+    if (typeof window !== 'undefined' && window.navigator?.language.includes('ru')) {
+      return 'ru-RU'
+    }
+
+    return 'en-US'
+  })
+
+  // @todo fix this
+  const localeCurrency = computed(() => {
+    if (typeof window !== 'undefined' && window.navigator?.language.includes('ru')) {
+      return 'RUB'
+    }
+
+    return 'USD'
+  })
+
+  const formatCurrency = (value: number, currencyId: string): string => {
+    return value.toLocaleString(localeCode.value, {
       style: 'currency',
-      currency: 'USD',
+      currency: currencyId ?? localeCurrency.value,
       maximumFractionDigits: 0
     })
   }
 
-  const formatDate = new DateFormatter('en-US', {
-    dateStyle: 'medium'
-  })
-
   const formatDateByPeriod = (date: Date): string => {
     return ({
-      daily: format(date, 'd MMM'),
-      weekly: format(date, 'd MMM'),
-      monthly: format(date, 'MMM yyy')
+      daily: date.toLocaleString(localeCode.value, {
+        day: 'numeric',
+        month: 'short',
+      }),
+      weekly: date.toLocaleString(localeCode.value, {
+        day: 'numeric',
+        month: 'short',
+      }),
+      monthly: date.toLocaleString(localeCode.value, {
+        year: 'numeric',
+        month: 'short',
+      })
     })[period.value]
   }
 
-  const formatDateShort = (date: Date): string => {
-    return date.toLocaleString('en-US', {
+  const formatDateRange = (date: Date): string => {
+    return date.toLocaleString(localeCode.value, {
+      dateStyle: 'short',
+      hour12: false
+    })
+  }
+
+  const formatDateTimeShort = (date: Date): string => {
+    return date.toLocaleString(localeCode.value, {
       day: 'numeric',
       month: 'short',
       hour: '2-digit',
@@ -109,15 +136,15 @@ const _useDealStats = () => {
       }
     ]
 
-    return baseStats.map((stat) => {
+    return baseStats.map((stat, index) => {
       const value = randomInt(stat.minValue, stat.maxValue)
       const variation = randomInt(stat.minVariation, stat.maxVariation)
 
       return {
         title: stat.title,
         icon: stat.icon,
-        value: stat.formatter ? stat.formatter(value) : value,
-        variation
+        value: stat.formatter ? stat.formatter(value, 'USD') : value,
+        variation: index === 0 ? null : variation
       }
     })
   }
@@ -161,6 +188,7 @@ const _useDealStats = () => {
         status: randomFrom(['success', 'failed', 'processing']),
         title: randomFrom(sampleEmails),
         amount: randomInt(100, 1000),
+        currencyId: 'USD',
         isCanOpen: false
       })
     }
@@ -184,9 +212,7 @@ const _useDealStats = () => {
 
       await processCrmItemList()
     } catch (error) {
-      $logger.error('Some error', {
-        error
-      })
+      $logger.error('Some error', { error })
     } finally {
       loading.value = false
     }
@@ -231,7 +257,16 @@ const _useDealStats = () => {
             '<=closedate': Text.toB24Format(to),
             '=closed': true
           },
-          select: ['id', 'title', 'begindate', 'closedate', 'stageId', 'stageSemanticId', 'opportunity', 'title', 'contactId', 'companyId']
+          select: [
+            'id', 'title',
+            'begindate', 'closedate',
+            'stageId', 'stageSemanticId',
+            'opportunity', 'currencyId',
+            // @memo this is off on b24
+            // 'opportunityAccount', 'accountCurrencyId',
+            'title',
+            'contactId', 'companyId'
+          ]
         },
         idKey: 'id',
         customKeyForResult: 'items',
@@ -263,6 +298,7 @@ const _useDealStats = () => {
             status: mapStatus[row.stageSemanticId] ?? 'P' as const,
             title: row.title,
             amount: row.opportunity,
+            currencyId: row.currencyId,
             isCanOpen: true
           })
         })
@@ -272,26 +308,26 @@ const _useDealStats = () => {
             title: 'Customers',
             icon: ContactIcon,
             value: uniqueCustomers.size,
-            variation: 0.0
+            variation: null
           },
           {
             title: 'Conversions',
             icon: GraphsDiagramIcon,
             value: successfulDeals,
-            variation: 0.0
+            variation: null
           },
           {
             title: 'Revenue',
             icon: WalletIcon,
             formatter: formatCurrency,
-            value: formatCurrency(totalAmount),
-            variation: 0.0
+            value: formatCurrency(totalAmount, localeCurrency.value),
+            variation: null
           },
           {
             title: 'Orders',
             icon: ShoppingCartIcon,
             value: rows.length,
-            variation: 0.0
+            variation: null
           }
         ]
       }
@@ -323,10 +359,6 @@ const _useDealStats = () => {
           groups[foundTs].push(row)
         }
       })
-
-
-
-      $logger.debug('stats', { stats: stats.value })
 
       chart.value = Object.entries(groups).map(([timestamp, dealsInRange]) => {
         return {
@@ -411,9 +443,9 @@ const _useDealStats = () => {
     salesData,
     isLoading,
     formatCurrency,
-    formatDate,
+    formatDateRange,
     formatDateByPeriod,
-    formatDateShort,
+    formatDateTimeShort,
     openDeal,
     getDealUrl,
   }

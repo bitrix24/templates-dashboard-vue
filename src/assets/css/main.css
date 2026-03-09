@@ -7,6 +7,7 @@
 @layer base {
   .light, :root {
     --air-theme-bg-color: #ffffff;
+    --ui-btn-background-hover: #162345;
   }
 
   .dark {

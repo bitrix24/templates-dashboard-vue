@@ -6,7 +6,7 @@ import { useDealStats } from '../../composables/useDealStats'
 import type { Sale } from '../../types'
 import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 
-const { salesData, isLoading, formatCurrency, formatDateShort, openDeal, getDealUrl } = useDealStats()
+const { salesData, isLoading, formatCurrency, formatDateTimeShort, openDeal, getDealUrl } = useDealStats()
 const B24Badge = resolveComponent('B24Badge')
 const B24Button = resolveComponent('B24Button')
 const B24Link = resolveComponent('B24Link')
@@ -21,7 +21,7 @@ const columns: TableColumn<Sale>[] = [
     accessorKey: 'begindate',
     header: 'Begin date',
     cell: ({ row }) => {
-      return formatDateShort(new Date(row.getValue('begindate')))
+      return formatDateTimeShort(new Date(row.getValue('begindate')))
     }
   },
   {
@@ -46,7 +46,7 @@ const columns: TableColumn<Sale>[] = [
     cell: ({ row }) => {
       const value = row.getValue('closedate')
       if (value) {
-        return formatDateShort(new Date(`${value}`))
+        return formatDateTimeShort(new Date(`${value}`))
       }
     }
   },
@@ -92,7 +92,8 @@ const columns: TableColumn<Sale>[] = [
     header: () => h('div', { class: 'text-right' }, 'Amount'),
     cell: ({ row }) => {
       const amount = Number.parseFloat(row.getValue('amount'))
-      return h('div', { class: 'text-right font-(--ui-font-weight-medium)' }, formatCurrency(amount))
+      const currencyId = row.original.currencyId
+      return h('div', { class: 'text-right font-(--ui-font-weight-medium)' }, formatCurrency(amount, currencyId))
     }
   }
 ]

@@ -6,7 +6,7 @@ import { getLocalTimeZone, CalendarDate, today } from '@internationalized/date'
 import CalendarIcon from '@bitrix24/b24icons-vue/outline/CalendarIcon'
 import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 
-const { formatDate, isLoading } = useDealStats()
+const { formatDateRange, isLoading } = useDealStats()
 
 const selected = defineModel<Range>({ required: true })
 
@@ -40,11 +40,11 @@ const calendarRange = computed({
   }
 })
 
+const currentDate = today(getLocalTimeZone())
+let startDate = currentDate.copy()
+
 const isRangeSelected = (range: { days?: number, months?: number, years?: number }) => {
   if (!selected.value.start || !selected.value.end) return false
-
-  const currentDate = today(getLocalTimeZone())
-  let startDate = currentDate.copy()
 
   if (range.days) {
     startDate = startDate.subtract({ days: range.days })
@@ -82,20 +82,21 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
 <template>
   <B24Popover :content="{ align: 'start' }" :modal="true">
     <B24Button
-      use-dropdown
-      color="air-tertiary"
       :icon="CalendarIcon"
+      color="air-secondary-accent-1"
+      size="sm"
       class="group data-[state=open]:bg-(--ui-btn-background-hover)"
       :b24ui="{ label: 'flex-1' }"
       :disabled="isLoading"
+      use-dropdown
     >
       <span class="flex-1 text-start truncate">
         <template v-if="selected.start">
           <template v-if="selected.end">
-            {{ formatDate.format(selected.start) }} - {{ formatDate.format(selected.end) }}
+            {{ formatDateRange(selected.start) }} - {{ formatDateRange(selected.end) }}
           </template>
           <template v-else>
-            {{ formatDate.format(selected.start) }}
+            {{ formatDateRange(selected.start) }}
           </template>
         </template>
         <template v-else>
@@ -126,7 +127,9 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
           v-model="calendarRange"
           class="p-2"
           :number-of-months="2"
+          size="sm"
           range
+          :fixed-weeks="false"
         />
       </div>
     </template>

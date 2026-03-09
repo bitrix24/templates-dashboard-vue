@@ -55,7 +55,8 @@ await initPage()
 <template>
   <B24DashboardPanel id="home" :b24ui="{ body: 'p-4' }">
     <template #header>
-      <B24DashboardNavbar :title="page.title" :b24ui="{ right: 'gap-3' }">
+      <!-- @todo: after UI update fix :b24ui -->
+      <B24DashboardNavbar :title="page.title" :b24ui="{ root: 'ps-2 lg:ps-4', right: 'gap-3' }">
         <template #right>
           <B24Tooltip text="Notifications" :kbds="['N']">
             <B24Button
@@ -87,12 +88,10 @@ await initPage()
       <!-- @todo: after UI update fix :b24ui -->
       <B24DashboardToolbar class="scrollbar-thin" :b24ui="{ root: 'sm:px-4' }">
         <template #left>
-          <!-- NOTE: The `-ms-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
           <B24Button
             :icon="DatabaseIcon"
             label="Load data"
-            color="air-secondary-accent-2"
-            class="-ms-2"
+            color="air-primary"
             size="sm"
             loading-auto
             @click="loadDeals"

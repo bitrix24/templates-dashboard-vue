@@ -34,8 +34,8 @@ export interface Stat {
   title: string
   icon: IconComponent
   value: number | string
-  variation: number
-  formatter?: (value: number) => string
+  variation: null | number
+  formatter?: (value: number, currencyId: string) => string
 }
 
 export interface Sale {
@@ -45,6 +45,7 @@ export interface Sale {
   status: SaleStatus
   title: string
   amount: number
+  currencyId: string
   stageSemanticId: Semantic
   isCanOpen: boolean
 }
@@ -77,5 +78,6 @@ export type Deal = {
   begindate: ISODate
   closedate: ISODate
   opportunity: number
+  currencyId: string
   stageSemanticId: Semantic
 }
