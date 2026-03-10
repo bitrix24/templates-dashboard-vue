@@ -6,7 +6,7 @@ import { useDealStats } from '../../composables/useDealStats'
 import type { Sale } from '../../types'
 import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 
-const { salesData, isLoading, formatCurrency, formatDateTimeShort, openDeal, getDealUrl } = useDealStats()
+const { salesData, isLoading, formatCurrency, formatDateTimeShort, openDeal } = useDealStats()
 const B24Badge = resolveComponent('B24Badge')
 const B24Button = resolveComponent('B24Button')
 const B24Link = resolveComponent('B24Link')
@@ -69,19 +69,17 @@ const columns: TableColumn<Sale>[] = [
     accessorKey: 'title',
     header: 'Title',
     cell: ({ row }) => {
-      const isCanOpen = row.original.isCanOpen
-      if (!isCanOpen) {
+      if (typeof row.original.editPath === 'undefined') {
         return row.original.title
-      }
-      const handleClick = (e: Event) => {
-        e.preventDefault()
-        openDeal(row.original)
       }
 
       return h(B24Link, {
-        to: getDealUrl(row.original),
+        to: row.original.editPath,
         isAction: true,
-        onClick: handleClick,
+        onClick: (e: Event) => {
+          e.preventDefault()
+          openDeal(row.original)
+        },
       }, {
         default: () => row.original.title
       })

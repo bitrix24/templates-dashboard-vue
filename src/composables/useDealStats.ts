@@ -40,6 +40,12 @@ const _useDealStats = () => {
   const _localeCode = ref<null | string>(null)
   const _localeKey = ref<null | string>(null)
 
+  const mapStatus: Record<Semantic, SaleStatus> = {
+    P: 'processing',
+    S: 'success',
+    F: 'failed'
+  }
+
   // region formatters ////
   const localeCode = computed(() => {
     if(_localeCode.value !== null) {
@@ -233,8 +239,7 @@ const _useDealStats = () => {
         status: randomFrom(['success', 'failed', 'processing']),
         title: randomFrom(sampleEmails),
         amount: randomInt(100, 1000),
-        currencyId: 'USD',
-        isCanOpen: false
+        currencyId: 'USD'
       })
     }
 
@@ -263,36 +268,34 @@ const _useDealStats = () => {
     }
   }
 
-  async function _processCrmItemList(): Promise<void> {
-    let batchNumber = 0
-    let totalItems = 0
-
-    const from = new Date(range.value.start)
+  async function fetchDealsInRange(
+    start: Date,
+    end: Date,
+    cb?: (options: {
+      customers: number,
+      conversions: number,
+      orders: number,
+      revenueValue: string[]
+    }) => void
+  ): Promise<{
+    rows: Sale[],
+    totalSuccessfulAmountByCurrency: Record<string, number>,
+    uniqueCustomers: Set<string>,
+    successfulDeals: number
+  }> {
+    const from = new Date(start)
     from.setHours(0, 0, 0)
-
-    const to = new Date(range.value.end)
+    const to = new Date(end)
     to.setHours(23, 59, 59)
-
-    const requestId = 'bitrix24-ui-template-dashboard-vue-loadDeals'
-
-    const mapStatus: Record<Semantic, SaleStatus> = {
-      P: 'processing',
-      S: 'success',
-      F: 'failed'
-    }
-
-    const dates = ({
-      daily: eachDayOfInterval,
-      weekly: eachWeekOfInterval,
-      monthly: eachMonthOfInterval
-    } as Record<Period, typeof eachDayOfInterval>)[period.value](range.value)
 
     const totalSuccessfulAmountByCurrency: Record<string, number> = {}
     let successfulDeals = 0
-    const uniqueCustomers = new Set()
-
+    const uniqueCustomers = new Set<string>()
     const rows: Sale[] = []
+
     try {
+      const requestId = `dashboard-loadDeals_${Text.toB24Format(from)}_${Text.toB24Format(to)}`
+
       const generator = $b24.actions.v2.fetchList.make<Deal>({
         method: 'crm.item.list',
         params: {
@@ -303,10 +306,8 @@ const _useDealStats = () => {
             '=closed': true
           },
           select: [
-            'id', 'title',
-            'begindate', 'closedate',
-            'stageId', 'stageSemanticId',
-            'opportunity', 'currencyId',
+            'id', 'title', 'begindate', 'closedate',
+            'stageId', 'stageSemanticId', 'opportunity', 'currencyId',
             'contactId', 'companyId'
           ]
         },
@@ -316,11 +317,7 @@ const _useDealStats = () => {
       })
 
       for await (const chunk of generator) {
-        batchNumber++
-        totalItems += chunk.length
-
         chunk.forEach((row) => {
-
           uniqueCustomers.add(
             row.contactId > 0 ? `contact_${row.contactId}` : (
               row.companyId > 0 ? `company_${row.companyId}` : 'empty'
@@ -329,7 +326,6 @@ const _useDealStats = () => {
 
           if (row.stageSemanticId === 'S') {
             successfulDeals++
-
             const currency = row.currencyId || localeCurrency.value
             totalSuccessfulAmountByCurrency[currency] = (totalSuccessfulAmountByCurrency[currency] || 0) + row.opportunity
           }
@@ -343,46 +339,127 @@ const _useDealStats = () => {
             title: row.title,
             amount: row.opportunity,
             currencyId: row.currencyId,
-            isCanOpen: true
+            editPath: $b24.slider.getUrl(`/crm/deal/details/${row.id}/`).toString()
           })
         })
 
-        const revenueEntries = Object.entries(totalSuccessfulAmountByCurrency)
-        const revenueValue: string[] = revenueEntries.length
-          ? revenueEntries.map(([currency, amount]) => formatCurrency(amount, currency))
-          : [formatCurrency(0, localeCurrency.value)]
+        if(cb) {
+          const revenueEntries = Object.entries(totalSuccessfulAmountByCurrency)
+          const revenueValue: string[] = revenueEntries.length
+            ? revenueEntries.map(([currency, amount]) => formatCurrency(amount, currency))
+            : [formatCurrency(0, localeCurrency.value)]
 
-        stats.value = [
-          {
-            title: 'Customers',
-            icon: ContactIcon,
-            value: uniqueCustomers.size,
-            variation: null
-          },
-          {
-            title: 'Conversions',
-            icon: GraphsDiagramIcon,
-            value: successfulDeals,
-            variation: null
-          },
-          {
-            title: 'Orders',
-            icon: ShoppingCartIcon,
-            value: rows.length,
-            variation: null
-          },
-          ...revenueValue.map((row) => {
-            return {
-              title: 'Revenue',
-              icon: WalletIcon,
-              value: row,
-              variation: null
-            }
+          cb({
+            customers: uniqueCustomers.size,
+            conversions: successfulDeals,
+            orders: rows.length,
+            revenueValue: revenueValue
           })
-        ]
+        }
       }
 
-      _currencyList.value = Object.keys(totalSuccessfulAmountByCurrency)
+      return { rows, totalSuccessfulAmountByCurrency, uniqueCustomers, successfulDeals }
+    } catch (error) {
+      $logger.error('Error fetching deals in range', { start, end, error })
+      throw error
+    }
+  }
+
+
+  async function _processCrmItemList(): Promise<void> {
+    const dates = ({
+      daily: eachDayOfInterval,
+      weekly: eachWeekOfInterval,
+      monthly: eachMonthOfInterval
+    } as Record<Period, typeof eachDayOfInterval>)[period.value](range.value)
+    const previousStart = sub(range.value.start, { years: 1 })
+    const previousEnd = sub(range.value.end, { years: 1 })
+
+    try {
+      stats.value = [
+        {
+          title: 'Customers',
+          icon: ContactIcon,
+          value: 0,
+          variation: null
+        },
+        {
+          title: 'Conversions',
+          icon: GraphsDiagramIcon,
+          value: 0,
+          variation: null
+        },
+        {
+          title: 'Orders',
+          icon: ShoppingCartIcon,
+          value: 0,
+          variation: null
+        },
+        ...[formatCurrency(0, localeCurrency.value)].map((row) => {
+          return {
+            title: 'Revenue',
+            icon: WalletIcon,
+            value: row,
+            variation: null
+          }
+        })
+      ]
+
+      const promiseCurrentData = fetchDealsInRange(
+        range.value.start,
+        range.value.end,
+        (options: {
+          customers: number,
+          conversions: number,
+          orders: number,
+          revenueValue: string[]
+        }) => {
+          stats.value = [
+            {
+              title: 'Customers',
+              icon: ContactIcon,
+              value: options.customers,
+              variation: null
+            },
+            {
+              title: 'Conversions',
+              icon: GraphsDiagramIcon,
+              value: options.conversions,
+              variation: null
+            },
+            {
+              title: 'Orders',
+              icon: ShoppingCartIcon,
+              value: options.orders,
+              variation: null
+            },
+            ...options.revenueValue.map((row) => {
+              return {
+                title: 'Revenue',
+                icon: WalletIcon,
+                value: row,
+                variation: null
+              }
+            })
+          ]
+        }
+      )
+
+      const promisePreviousData = fetchDealsInRange(
+        previousStart,
+        previousEnd
+      )
+
+      const [currentData, previousData] = await Promise.all([promiseCurrentData, promisePreviousData])
+
+      // const calcVariation = (current: number, previous: number): number | null => {
+      //   if (previous === 0) return null
+      //   return Math.round(((current - previous) / previous) * 100)
+      // }
+
+      $logger.debug('_previousData', { previousData })
+
+      _currencyList.value = Object.keys(currentData.totalSuccessfulAmountByCurrency)
 
       const timestamps = dates.map(d => d.getTime())
       const groups = timestamps.reduce((acc, ts) => {
@@ -390,7 +467,7 @@ const _useDealStats = () => {
         return acc
       }, {} as Record<number, Sale[]>);
 
-      rows.filter(row => row.stageSemanticId === 'S')
+      currentData.rows.filter(row => row.stageSemanticId === 'S')
       .forEach(row => {
         const closeTs = new Date(row.closedate!).getTime()
 
@@ -428,16 +505,12 @@ const _useDealStats = () => {
       })
       .sort((a, b) => a.date.getTime() - b.date.getTime())
 
-      sales.value = rows.sort((a, b) => new Date(b.closedate!).getTime() - new Date(a.closedate!).getTime()).slice(-5)
+      sales.value = currentData.rows.sort((a, b) => new Date(b.closedate!).getTime() - new Date(a.closedate!).getTime()).slice(-5)
     } catch (error) {
       if (error instanceof SdkError) {
-        $logger.error(`Processing error: ${error.message}`, {
-          code: error.code,
-          batchNumber,
-          totalItems
-        })
+        $logger.error(`Processing error: ${error.message}`, { code: error.code, error })
       } else {
-        $logger.error('Unknown error', { error, batchNumber, totalItems })
+        $logger.error('Unknown error', { error })
       }
       throw error
     }
@@ -449,16 +522,8 @@ const _useDealStats = () => {
     }
 
     return $b24.slider.openPath(
-      $b24.slider.getUrl(`/crm/deal/details/${row.id}/`)
+      $b24.slider.getUrl(row.editPath)
     )
-  }
-
-  function getDealUrl(row: Sale) {
-    if (!isUseB24.value) {
-      return '#b24-not-init'
-    }
-
-    return $b24.slider.getUrl(`/crm/deal/details/${row.id}/`).toString()
   }
   // endregion /////
 
@@ -517,8 +582,7 @@ const _useDealStats = () => {
     formatDateRange,
     formatDateByPeriod,
     formatDateTimeShort,
-    openDeal,
-    getDealUrl
+    openDeal
   }
 }
 

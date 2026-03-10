@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useTemplateRef } from 'vue'
+import { useTemplateRef } from 'vue'
 import { VisXYContainer, VisLine, VisAxis, VisCrosshair, VisTooltip } from '@unovis/vue'
 import { useElementSize } from '@vueuse/core'
 import type { DataRecord } from '../../types'
@@ -24,7 +24,9 @@ const template = (d: DataRecord) => {
   return `<strong>${dateStr}</strong> <ul>${lines}</ul>`
 }
 
-const getTotal = (currency) => chartData.value.reduce((acc: number, { amount }) => acc + (amount[currency] ?? 0.0), 0)
+function getTotal(currency: string) {
+  return chartData.value.reduce((acc: number, { amount }) => acc + (amount[currency] ?? 0.0), 0)
+}
 
 const xTicks = (i: number) => {
   if (i === 0 || i === chartData.value.length - 1 || !chartData.value[i]) {
@@ -42,11 +44,11 @@ const xTicks = (i: number) => {
         <p class="text-xs text-(--b24ui-typography-label-color) uppercase mb-1.5">
           Revenue
         </p>
-        <div class="flex flex-row flex-wrap gap-5">
+        <div class="flex items-center flex-wrap gap-2 sm:gap-5">
           <span
             v-for="(currency) in currencyListData"
             :key="currency"
-            class="text-3xl text-(--b24ui-typography-legend-color) font-semibold"
+            class="w-full sm:w-auto text-xl text-(--b24ui-typography-legend-color) font-semibold sm:ps-5 sm:border-(--ui-color-divider-default) sm:border-l-2 sm:first:border-l-0 sm:first:ps-0"
           >
             {{ formatCurrency(getTotal(currency), currency) }}
           </span>

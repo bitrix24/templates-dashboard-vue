@@ -47,7 +47,7 @@ export interface Sale {
   amount: number
   currencyId: string
   stageSemanticId: Semantic
-  isCanOpen: boolean
+  editPath?: string
 }
 
 export interface Notification {

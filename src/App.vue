@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import type { Result } from '@bitrix24/b24jssdk'
 import { ref, onMounted } from 'vue'
-import * as locales from '@bitrix24/b24ui-nuxt/locale'
 import { useB24 } from './composables/useB24'
 import { useDashboard } from './composables/useDashboard.ts'
-import { useDealStats } from './composables/useDealStats.ts'
 import { sleepAction } from './utils'
 import CloudErrorIcon from '@bitrix24/b24icons-vue/main/CloudErrorIcon'
 
