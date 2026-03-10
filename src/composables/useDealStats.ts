@@ -259,7 +259,7 @@ const _useDealStats = () => {
       monthly: eachMonthOfInterval
     } as Record<Period, typeof eachDayOfInterval>)[period.value](range.value)
 
-    let totalAmount = 0.0
+    const totalAmountByCurrency: Record<string, number> = {}
     let successfulDeals = 0
     const uniqueCustomers = new Set()
 
@@ -279,9 +279,6 @@ const _useDealStats = () => {
             'begindate', 'closedate',
             'stageId', 'stageSemanticId',
             'opportunity', 'currencyId',
-            // @memo this is off on b24
-            // 'opportunityAccount', 'accountCurrencyId',
-            'title',
             'contactId', 'companyId'
           ]
         },
@@ -298,13 +295,15 @@ const _useDealStats = () => {
 
           uniqueCustomers.add(
             row.contactId > 0 ? `contact_${row.contactId}` : (
-              row.companyId > 0 ? `contact_${row.contactId}` : 'empty'
+              row.companyId > 0 ? `company_${row.companyId}` : 'empty'
             )
           )
 
           if (row.stageSemanticId === 'S') {
-            successfulDeals = successfulDeals + 1
-            totalAmount = totalAmount + row.opportunity
+            successfulDeals++
+
+            const currency = row.currencyId || localeCurrency.value
+            totalAmountByCurrency[currency] = (totalAmountByCurrency[currency] || 0) + row.opportunity
           }
 
           rows.push({
@@ -319,35 +318,39 @@ const _useDealStats = () => {
             isCanOpen: true
           })
         })
-
-        stats.value = [
-          {
-            title: 'Customers',
-            icon: ContactIcon,
-            value: uniqueCustomers.size,
-            variation: null
-          },
-          {
-            title: 'Conversions',
-            icon: GraphsDiagramIcon,
-            value: successfulDeals,
-            variation: null
-          },
-          {
-            title: 'Revenue',
-            icon: WalletIcon,
-            formatter: formatCurrency,
-            value: formatCurrency(totalAmount, localeCurrency.value),
-            variation: null
-          },
-          {
-            title: 'Orders',
-            icon: ShoppingCartIcon,
-            value: rows.length,
-            variation: null
-          }
-        ]
       }
+
+      const revenueEntries = Object.entries(totalAmountByCurrency)
+      const revenueValue = revenueEntries.length
+        ? revenueEntries.map(([currency, amount]) => formatCurrency(amount, currency)).join(' + ')
+        : formatCurrency(0, localeCurrency.value)
+
+      stats.value = [
+        {
+          title: 'Customers',
+          icon: ContactIcon,
+          value: uniqueCustomers.size,
+          variation: null
+        },
+        {
+          title: 'Conversions',
+          icon: GraphsDiagramIcon,
+          value: successfulDeals,
+          variation: null
+        },
+        {
+          title: 'Revenue',
+          icon: WalletIcon,
+          value: revenueValue,
+          variation: null
+        },
+        {
+          title: 'Orders',
+          icon: ShoppingCartIcon,
+          value: rows.length,
+          variation: null
+        }
+      ]
 
       const timestamps = dates.map(d => d.getTime())
       const groups = timestamps.reduce((acc, ts) => {
