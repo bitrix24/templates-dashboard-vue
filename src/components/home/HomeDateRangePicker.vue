@@ -119,6 +119,7 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
             class="rounded-none px-4"
             :class="[isRangeSelected(range) ? 'bg-(--ui-btn-background-hover)' : 'hover:bg-(--ui-btn-background-hover)']"
             truncate
+            :disabled="isLoading"
             @click="selectRange(range)"
           />
         </div>
@@ -129,6 +130,7 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
           :number-of-months="2"
           size="sm"
           range
+          :disabled="isLoading"
           :fixed-weeks="false"
         />
       </div>

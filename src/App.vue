@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { Result } from '@bitrix24/b24jssdk'
 import { ref, onMounted } from 'vue'
+import * as locales from '@bitrix24/b24ui-nuxt/locale'
 import { useB24 } from './composables/useB24'
 import { useDashboard } from './composables/useDashboard.ts'
+import { useDealStats } from './composables/useDealStats.ts'
 import { sleepAction } from './utils'
 import CloudErrorIcon from '@bitrix24/b24icons-vue/main/CloudErrorIcon'
 
@@ -13,6 +15,7 @@ const { isBxMobile } = useDashboard()
 const isLoading = ref(true)
 
 const toaster = { position: isBxMobile.value ? 'bottom-center' : 'top-right' }
+// const loc = ref(locales.en)
 
 onMounted(async () => {
   const result: Result = await b24Instance.init()
@@ -25,6 +28,13 @@ onMounted(async () => {
     })
   }
 
+  // @todo fix this - current locale from B24 - :locale="loc"
+  // nextTick(() => {
+  //   if (b24Instance.isInit()) {
+  //     loc.value = locales[localeKey.value]
+  //   }
+  // })
+
   // Used to display the connection loading indicator
   await sleepAction(1000)
   isLoading.value = false
@@ -34,7 +44,7 @@ onMounted(async () => {
 <template>
   <Suspense>
     <B24App :toaster="toaster">
-      <ConnectLoader v-if="isLoading" />
+      <HomeLoader v-if="isLoading" />
       <RouterView v-else />
     </B24App>
   </Suspense>

@@ -7,7 +7,7 @@ const { statsData } = useDealStats()
 </script>
 
 <template>
-  <B24PageGrid class="lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-0">
+  <B24PageGrid class="lg:grid-cols-4 gap-4 sm:gap-6">
     <B24PageCard
       v-for="(stat, index) in statsData"
       :key="index"
@@ -22,7 +22,6 @@ const { statsData } = useDealStats()
         leading: 'p-2.5 rounded-full bg-primary/10 ring ring-inset ring-primary/25',
         title: 'text-description font-normal text-xs uppercase'
       }"
-      class="lg:rounded-none first:rounded-l-lg last:rounded-r-lg hover:z-1 lg:border-r lg:last:border-r-0 lg:border-(--ui-color-divider-default)"
     >
       <div class="flex items-center gap-2">
         <!-- @todo: fix text-[length:24px] -->

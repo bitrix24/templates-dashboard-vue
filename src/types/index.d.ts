@@ -67,7 +67,7 @@ export interface Range {
 
 export type DataRecord = {
   date: Date
-  amount: number
+  amount: Record<string, number>
 }
 
 export type Deal = {

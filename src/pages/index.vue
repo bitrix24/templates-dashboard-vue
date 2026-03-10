@@ -9,9 +9,8 @@ import Bell1Icon from '@bitrix24/b24icons-vue/main/Bell1Icon'
 import PlusLIcon from '@bitrix24/b24icons-vue/outline/PlusLIcon'
 import SendIcon from '@bitrix24/b24icons-vue/outline/SendIcon'
 import AddPersonIcon from '@bitrix24/b24icons-vue/outline/AddPersonIcon'
-import DatabaseIcon from '@bitrix24/b24icons-vue/outline/DatabaseIcon'
 
-const { period, range, loadDeals } = useDealStats()
+const { period, range, isLoading } = useDealStats()
 
 const { isNotificationsSlideoverOpen, isBxMobile } = useDashboard()
 const b24Instance = useB24()
@@ -41,7 +40,6 @@ const page = {
 }
 
 async function initPage() {
-  await loadDeals()
   if (!isUseB24.value) {
     return
   }
@@ -88,15 +86,6 @@ await initPage()
       <!-- @todo: after UI update fix :b24ui -->
       <B24DashboardToolbar class="scrollbar-thin" :b24ui="{ root: 'sm:px-4' }">
         <template #left>
-          <B24Button
-            :icon="DatabaseIcon"
-            label="Load data"
-            color="air-primary"
-            size="sm"
-            loading-auto
-            @click="loadDeals"
-          />
-
           <HomeDateRangePicker v-model="range" />
 
           <HomePeriodSelect v-model="period" :range="range" />
@@ -106,8 +95,14 @@ await initPage()
 
     <template #body>
       <HomeStats />
-      <HomeChart />
-      <HomeSales />
+      <template v-if="isLoading">
+        <HomeLoaderChart class="min-h-[470px]" />
+        <HomeLoaderSales class="min-h-[230px]" />
+      </template>
+      <template v-else>
+        <HomeChart />
+        <HomeSales />
+      </template>
     </template>
   </B24DashboardPanel>
 </template>

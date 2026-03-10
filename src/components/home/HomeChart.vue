@@ -1,19 +1,30 @@
 <script setup lang="ts">
 import { computed, useTemplateRef } from 'vue'
-import { VisXYContainer, VisLine, VisAxis, VisArea, VisCrosshair, VisTooltip } from '@unovis/vue'
+import { VisXYContainer, VisLine, VisAxis, VisCrosshair, VisTooltip } from '@unovis/vue'
 import { useElementSize } from '@vueuse/core'
 import type { DataRecord } from '../../types'
 import { useDealStats } from '../../composables/useDealStats.ts'
 
 const cardRef = useTemplateRef<HTMLElement | null>('cardRef')
 
-const { chartData, formatDateByPeriod, formatCurrency } = useDealStats()
+const { currencyListData, chartData, formatDateByPeriod, formatCurrency } = useDealStats()
 const { width } = useElementSize(cardRef)
 
 const x = (_: DataRecord, i: number) => i
-const y = (d: DataRecord) => d.amount
+const y = currencyListData.value.map((currency) => {
+  return (d: DataRecord) => d.amount[currency] ?? 0.0
+})
 
-const total = computed(() => chartData.value.reduce((acc: number, { amount }) => acc + amount, 0))
+const template = (d: DataRecord) => {
+  const dateStr = formatDateByPeriod(d.date)
+  const lines = Object.entries(d.amount)
+    .map(([currencyId, value]) => `<li> + ${formatCurrency(value, currencyId)}</li>`)
+    .join('\n')
+
+  return `<strong>${dateStr}</strong> <ul>${lines}</ul>`
+}
+
+const getTotal = (currency) => chartData.value.reduce((acc: number, { amount }) => acc + (amount[currency] ?? 0.0), 0)
 
 const xTicks = (i: number) => {
   if (i === 0 || i === chartData.value.length - 1 || !chartData.value[i]) {
@@ -22,8 +33,6 @@ const xTicks = (i: number) => {
 
   return formatDateByPeriod(chartData.value[i].date)
 }
-
-const template = (d: DataRecord) => `${formatDateByPeriod(d.date)}: ${formatCurrency(d.amount)}`
 </script>
 
 <template>
@@ -33,9 +42,15 @@ const template = (d: DataRecord) => `${formatDateByPeriod(d.date)}: ${formatCurr
         <p class="text-xs text-(--b24ui-typography-label-color) uppercase mb-1.5">
           Revenue
         </p>
-        <p class="text-3xl text-(--b24ui-typography-legend-color) font-semibold">
-          {{ formatCurrency(total) }}
-        </p>
+        <div class="flex flex-row flex-wrap gap-5">
+          <span
+            v-for="(currency) in currencyListData"
+            :key="currency"
+            class="text-3xl text-(--b24ui-typography-legend-color) font-semibold"
+          >
+            {{ formatCurrency(getTotal(currency), currency) }}
+          </span>
+        </div>
       </div>
     </template>
 
@@ -48,13 +63,6 @@ const template = (d: DataRecord) => `${formatDateByPeriod(d.date)}: ${formatCurr
       <VisLine
         :x="x"
         :y="y"
-        color="var(--ui-color-accent-main-primary-alt-2)"
-      />
-      <VisArea
-        :x="x"
-        :y="y"
-        color="var(--ui-color-accent-main-primary-alt)"
-        :opacity="0.1"
       />
 
       <VisAxis

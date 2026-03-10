@@ -3,7 +3,7 @@ import type { B24Frame } from "@bitrix24/b24jssdk";
 import type { SaleStatus, Semantic } from '../types'
 import * as locales from '@bitrix24/b24ui-nuxt/locale'
 import { EnumCrmEntityTypeId, Text, SdkError } from "@bitrix24/b24jssdk";
-import { ref, shallowRef, computed } from 'vue'
+import { ref, shallowRef, computed, watch } from 'vue'
 import { createSharedComposable } from '@vueuse/core'
 import { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, sub } from 'date-fns'
 import {randomFrom, randomInt} from '../utils'
@@ -26,6 +26,7 @@ const _useDealStats = () => {
   })
   const period = ref<Period>('daily')
   const stats = ref<Stat[]>([])
+  const _currencyList = ref<string[]>([])
   const chart = ref<DataRecord[]>([])
   const sales = ref<Sale[]>([])
   const loading = ref<boolean>(false)
@@ -36,31 +37,56 @@ const _useDealStats = () => {
   const isUseB24 = computed<boolean>(() => {
     return b24Instance.isInit()
   })
-  const locale = ref<null | string>(null)
+  const _localeCode = ref<null | string>(null)
+  const _localeKey = ref<null | string>(null)
 
   // region formatters ////
   const localeCode = computed(() => {
-    if(locale.value !== null) {
-      return locale.value
+    if(_localeCode.value !== null) {
+      return _localeCode.value
     }
 
     if (isUseB24.value) {
-      locale.value = locales[$b24.getLang()]?.locale
+      _localeCode.value = locales[$b24.getLang()]?.locale
     }
     if (
-      !locale.value
+      !_localeCode.value
       && typeof window !== 'undefined'
       && window.navigator?.language.includes('ru')
     ) {
-      locale.value = 'ru-RU'
+      _localeCode.value = 'ru-RU'
     }
 
-    if (!locale.value) {
-      locale.value = 'en-US'
+    if (!_localeCode.value) {
+      _localeCode.value = 'en-US'
     }
 
-    $logger.debug('set locale', { locale: locale.value })
-    return locale.value
+    $logger.debug('set locale code', { locale: _localeCode.value })
+    return _localeCode.value
+  })
+
+  const localeKey = computed(() => {
+    if(_localeKey.value !== null) {
+      return _localeKey.value
+    }
+
+    if (isUseB24.value) {
+      _localeKey.value = locales[$b24.getLang()]?.code
+    }
+    if (
+      !_localeKey.value
+      && typeof window !== 'undefined'
+      && window.navigator?.language.includes('ru')
+    ) {
+      _localeKey.value = 'ru'
+    }
+
+    if (!_localeKey.value) {
+      _localeKey.value = 'en'
+    }
+
+    $logger.debug('set locale key', { locale: _localeKey.value })
+    return _localeKey.value
   })
 
   // @todo fix this
@@ -173,10 +199,12 @@ const _useDealStats = () => {
       monthly: eachMonthOfInterval
     } as Record<Period, typeof eachDayOfInterval>)[period.value](range.value)
 
-    const min = 1000
-    const max = 10000
+    const min = 1_000
+    const max = 10_000
 
-    return dates.map(date => ({ date, amount: Math.floor(Math.random() * (max - min + 1)) + min }))
+    return dates.map(date => ({ date, amount: {
+      [localeCurrency.value]: Math.floor(Math.random() * (max - min + 1)) + min }
+    }))
   }
 
   function updateSalesMock() {
@@ -227,7 +255,7 @@ const _useDealStats = () => {
         return
       }
 
-      await processCrmItemList()
+      await _processCrmItemList()
     } catch (error) {
       $logger.error('Some error', { error })
     } finally {
@@ -235,7 +263,7 @@ const _useDealStats = () => {
     }
   }
 
-  async function processCrmItemList(): Promise<void> {
+  async function _processCrmItemList(): Promise<void> {
     let batchNumber = 0
     let totalItems = 0
 
@@ -259,7 +287,7 @@ const _useDealStats = () => {
       monthly: eachMonthOfInterval
     } as Record<Period, typeof eachDayOfInterval>)[period.value](range.value)
 
-    const totalAmountByCurrency: Record<string, number> = {}
+    const totalSuccessfulAmountByCurrency: Record<string, number> = {}
     let successfulDeals = 0
     const uniqueCustomers = new Set()
 
@@ -303,7 +331,7 @@ const _useDealStats = () => {
             successfulDeals++
 
             const currency = row.currencyId || localeCurrency.value
-            totalAmountByCurrency[currency] = (totalAmountByCurrency[currency] || 0) + row.opportunity
+            totalSuccessfulAmountByCurrency[currency] = (totalSuccessfulAmountByCurrency[currency] || 0) + row.opportunity
           }
 
           rows.push({
@@ -318,39 +346,43 @@ const _useDealStats = () => {
             isCanOpen: true
           })
         })
+
+        const revenueEntries = Object.entries(totalSuccessfulAmountByCurrency)
+        const revenueValue: string[] = revenueEntries.length
+          ? revenueEntries.map(([currency, amount]) => formatCurrency(amount, currency))
+          : [formatCurrency(0, localeCurrency.value)]
+
+        stats.value = [
+          {
+            title: 'Customers',
+            icon: ContactIcon,
+            value: uniqueCustomers.size,
+            variation: null
+          },
+          {
+            title: 'Conversions',
+            icon: GraphsDiagramIcon,
+            value: successfulDeals,
+            variation: null
+          },
+          {
+            title: 'Orders',
+            icon: ShoppingCartIcon,
+            value: rows.length,
+            variation: null
+          },
+          ...revenueValue.map((row) => {
+            return {
+              title: 'Revenue',
+              icon: WalletIcon,
+              value: row,
+              variation: null
+            }
+          })
+        ]
       }
 
-      const revenueEntries = Object.entries(totalAmountByCurrency)
-      const revenueValue = revenueEntries.length
-        ? revenueEntries.map(([currency, amount]) => formatCurrency(amount, currency)).join(' + ')
-        : formatCurrency(0, localeCurrency.value)
-
-      stats.value = [
-        {
-          title: 'Customers',
-          icon: ContactIcon,
-          value: uniqueCustomers.size,
-          variation: null
-        },
-        {
-          title: 'Conversions',
-          icon: GraphsDiagramIcon,
-          value: successfulDeals,
-          variation: null
-        },
-        {
-          title: 'Revenue',
-          icon: WalletIcon,
-          value: revenueValue,
-          variation: null
-        },
-        {
-          title: 'Orders',
-          icon: ShoppingCartIcon,
-          value: rows.length,
-          variation: null
-        }
-      ]
+      _currencyList.value = Object.keys(totalSuccessfulAmountByCurrency)
 
       const timestamps = dates.map(d => d.getTime())
       const groups = timestamps.reduce((acc, ts) => {
@@ -358,7 +390,8 @@ const _useDealStats = () => {
         return acc
       }, {} as Record<number, Sale[]>);
 
-      rows.forEach(row => {
+      rows.filter(row => row.stageSemanticId === 'S')
+      .forEach(row => {
         const closeTs = new Date(row.closedate!).getTime()
 
         let left = 0
@@ -383,7 +416,14 @@ const _useDealStats = () => {
       chart.value = Object.entries(groups).map(([timestamp, dealsInRange]) => {
         return {
           date: new Date(Number(timestamp)),
-          amount: dealsInRange.reduce((sum, row) => sum + (row.amount || 0.0), 0.0)
+          amount: dealsInRange.reduce((acc, row) => {
+            const currency = row.currencyId
+            const value = row.amount || 0
+
+            acc[currency] = (acc[currency] || 0) + value
+
+            return acc
+          }, {} as Record<string, number>)
         }
       })
       .sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -422,21 +462,21 @@ const _useDealStats = () => {
   }
   // endregion /////
 
-  // watch(
-  //   [() => period.value, () => range.value],
-  //   async () => {
-  //     if (!isUseB24.value) {
-  //       stats.value = updateStateMock()
-  //       chart.value = updateChartMock()
-  //       sales.value = updateSalesMock()
-  //
-  //       return
-  //     }
-  //
-  //     await loadDeals()
-  //   },
-  //   { immediate: true }
-  // )
+  watch(
+    [() => period.value, () => range.value],
+    async () => {
+      if (!isUseB24.value) {
+        stats.value = updateStateMock()
+        chart.value = updateChartMock()
+        sales.value = updateSalesMock()
+
+        return
+      }
+
+      await loadDeals()
+    },
+    { immediate: true }
+  )
 
   const statsData = computed(() => {
     return stats.value
@@ -450,18 +490,27 @@ const _useDealStats = () => {
     return sales.value.slice(-5)
   })
 
+  const currencyListData = computed(() => {
+    if (!isUseB24.value) {
+      return [localeCurrency.value]
+    }
+
+    return _currencyList.value
+  })
+
   const isLoading = computed(() => {
     return loading.value
   })
 
   return {
-    loadDeals,
     localeCode,
+    localeKey,
     localeCurrency,
     range,
     period,
     statsData,
     chartData,
+    currencyListData,
     salesData,
     isLoading,
     formatCurrency,
@@ -469,7 +518,7 @@ const _useDealStats = () => {
     formatDateByPeriod,
     formatDateTimeShort,
     openDeal,
-    getDealUrl,
+    getDealUrl
   }
 }
 
