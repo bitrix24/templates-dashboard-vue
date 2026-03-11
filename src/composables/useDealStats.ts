@@ -3,7 +3,7 @@ import type { B24Frame } from "@bitrix24/b24jssdk";
 import type { SaleStatus, Semantic } from '../types'
 import * as locales from '@bitrix24/b24ui-nuxt/locale'
 import { EnumCrmEntityTypeId, Text, SdkError } from "@bitrix24/b24jssdk";
-import { ref, shallowRef, computed, watch } from 'vue'
+import { ref, shallowRef, computed, watch, nextTick } from 'vue'
 import { createSharedComposable } from '@vueuse/core'
 import { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, sub } from 'date-fns'
 import {randomFrom, randomInt} from '../utils'
@@ -12,6 +12,13 @@ import ContactIcon from '@bitrix24/b24icons-vue/outline/ContactIcon'
 import GraphsDiagramIcon from '@bitrix24/b24icons-vue/outline/GraphsDiagramIcon'
 import WalletIcon from '@bitrix24/b24icons-vue/outline/WalletIcon'
 import ShoppingCartIcon from '@bitrix24/b24icons-vue/outline/ShoppingCartIcon'
+
+type cbCurrentOptions = {
+  customers: number,
+  conversions: number,
+  orders: number,
+  revenueValue: { amount: number, currency: string }[]
+}
 
 /**
  * @todo save selected range in b24 user.options || localStorage
@@ -192,7 +199,8 @@ const _useDealStats = () => {
       return {
         title: stat.title,
         icon: stat.icon,
-        value: stat.formatter ? stat.formatter(value, 'USD') : value,
+        value: value,
+        formatValue: stat.formatter ? stat.formatter(value, 'USD') : `${value}`,
         variation: index === 0 ? null : variation
       }
     })
@@ -268,20 +276,15 @@ const _useDealStats = () => {
     }
   }
 
-  async function fetchDealsInRange(
+  async function _fetchDealsInRange(
     start: Date,
     end: Date,
-    cb?: (options: {
-      customers: number,
-      conversions: number,
-      orders: number,
-      revenueValue: string[]
-    }) => void
+    cb?: (options: cbCurrentOptions) => void
   ): Promise<{
     rows: Sale[],
     totalSuccessfulAmountByCurrency: Record<string, number>,
     uniqueCustomers: Set<string>,
-    successfulDeals: number
+    successfulDeals: number,
   }> {
     const from = new Date(start)
     from.setHours(0, 0, 0)
@@ -319,8 +322,8 @@ const _useDealStats = () => {
       for await (const chunk of generator) {
         chunk.forEach((row) => {
           uniqueCustomers.add(
-            row.contactId > 0 ? `contact_${row.contactId}` : (
-              row.companyId > 0 ? `company_${row.companyId}` : 'empty'
+            row.companyId > 0 ? `company_${row.companyId}` : (
+              row.contactId > 0 ? `contact_${row.contactId}` : 'empty'
             )
           )
 
@@ -345,16 +348,16 @@ const _useDealStats = () => {
 
         if(cb) {
           const revenueEntries = Object.entries(totalSuccessfulAmountByCurrency)
-          const revenueValue: string[] = revenueEntries.length
-            ? revenueEntries.map(([currency, amount]) => formatCurrency(amount, currency))
-            : [formatCurrency(0, localeCurrency.value)]
+          const revenueValue: { amount: number, currency: string }[] = revenueEntries.length
+            ? revenueEntries.map(([currency, amount]) => ({ amount, currency }))
+            : [{ amount: 0, currency: localeCurrency.value }]
 
           cb({
             customers: uniqueCustomers.size,
             conversions: successfulDeals,
             orders: rows.length,
             revenueValue: revenueValue
-          })
+          } as cbCurrentOptions)
         }
       }
 
@@ -365,6 +368,12 @@ const _useDealStats = () => {
     }
   }
 
+  const _calcVariation = (current: number, previous: number): number | null => {
+    if (previous === 0) return null
+    return Math.round(((current - previous) / previous) * 100)
+  }
+
+  const _updateUI = (statMap: Map<string, Stat>) => { stats.value = Array.from(statMap.values()) }
 
   async function _processCrmItemList(): Promise<void> {
     const dates = ({
@@ -372,94 +381,82 @@ const _useDealStats = () => {
       weekly: eachWeekOfInterval,
       monthly: eachMonthOfInterval
     } as Record<Period, typeof eachDayOfInterval>)[period.value](range.value)
+
+    // @todo use -1Y or -1??
     const previousStart = sub(range.value.start, { years: 1 })
     const previousEnd = sub(range.value.end, { years: 1 })
 
     try {
-      stats.value = [
-        {
-          title: 'Customers',
-          icon: ContactIcon,
-          value: 0,
-          variation: null
-        },
-        {
-          title: 'Conversions',
-          icon: GraphsDiagramIcon,
-          value: 0,
-          variation: null
-        },
-        {
-          title: 'Orders',
-          icon: ShoppingCartIcon,
-          value: 0,
-          variation: null
-        },
-        ...[formatCurrency(0, localeCurrency.value)].map((row) => {
-          return {
-            title: 'Revenue',
-            icon: WalletIcon,
-            value: row,
-            variation: null
+      const statMap = new Map<string, Stat>([
+        ['customers', { title: 'Clients', descriptions: 'The number of unique clients (Company or Contact) from closed deals across all pipelines during the reporting period.', icon: ContactIcon, value: 0, formatValue: '0', variation: null }],
+        ['orders', { title: 'Total Deals', descriptions: 'The total number of deals across all pipelines during the reporting period.', icon: ShoppingCartIcon, value: 0, formatValue: '0', variation: null }],
+        ['conversions', { title: 'Won Deals', descriptions: 'The number of successfully closed deals across all pipelines during the reporting period.', icon: GraphsDiagramIcon, value: 0, formatValue: '0', variation: null }]
+      ])
+
+      _updateUI(statMap)
+
+      const promiseCurrentData = _fetchDealsInRange( range.value.start, range.value.end, (current: cbCurrentOptions) => {
+        (['customers', 'conversions', 'orders']  as const).forEach(k => {
+          const stat = statMap.get(k)!
+          stat.value = current[k]
+          stat.formatValue = String(current[k])
+          if (typeof stat.prevRawValue !== 'undefined') {
+            stat.variation = _calcVariation(stat.value, stat.prevRawValue)
           }
         })
-      ]
 
-      const promiseCurrentData = fetchDealsInRange(
-        range.value.start,
-        range.value.end,
-        (options: {
-          customers: number,
-          conversions: number,
-          orders: number,
-          revenueValue: string[]
-        }) => {
-          stats.value = [
-            {
-              title: 'Customers',
-              icon: ContactIcon,
-              value: options.customers,
-              variation: null
-            },
-            {
-              title: 'Conversions',
-              icon: GraphsDiagramIcon,
-              value: options.conversions,
-              variation: null
-            },
-            {
-              title: 'Orders',
-              icon: ShoppingCartIcon,
-              value: options.orders,
-              variation: null
-            },
-            ...options.revenueValue.map((row) => {
-              return {
-                title: 'Revenue',
-                icon: WalletIcon,
-                value: row,
-                variation: null
-              }
-            })
-          ]
-        }
-      )
+        current.revenueValue.forEach((row) => {
+          const key = `revenue-${row.currency}`
+          const stat = statMap.get(key) || { title: 'Revenue', descriptions: `The total amount in ${row.currency} of won deals across all pipelines during the reporting period.`, icon: WalletIcon,  value: 0, formatValue: formatCurrency(0, row.currency), variation: null }
+          stat.value = row.amount
+          stat.formatValue = formatCurrency(row.amount, row.currency)
+          if (typeof stat.prevRawValue !== 'undefined') {
+            stat.variation = _calcVariation(stat.value, stat.prevRawValue)
+          }
+          statMap.set(key, stat as Stat)
+        })
 
-      const promisePreviousData = fetchDealsInRange(
-        previousStart,
-        previousEnd
-      )
+        _updateUI(statMap)
+      })
 
-      const [currentData, previousData] = await Promise.all([promiseCurrentData, promisePreviousData])
+      const promisePreviousData = _fetchDealsInRange(previousStart, previousEnd, (prev: cbCurrentOptions) => {
+        (['customers', 'conversions', 'orders']  as const).forEach(k => {
+          if (!statMap.has(k)) {
+            return
+          }
 
-      // const calcVariation = (current: number, previous: number): number | null => {
-      //   if (previous === 0) return null
-      //   return Math.round(((current - previous) / previous) * 100)
-      // }
+          const stat = statMap.get(k)!
+          stat.prevRawValue = prev[k]
+          if (stat.value !== 0) {
+            stat.variation = _calcVariation(stat.value, stat.prevRawValue)
+          }
+        })
 
-      $logger.debug('_previousData', { previousData })
+        prev.revenueValue.forEach((row) => {
+          const key = `revenue-${row.currency}`
+          const stat = statMap.get(key) || { title: 'Revenue', descriptions: `The total amount in ${row.currency} of won deals across all pipelines during the reporting period.`, icon: WalletIcon,  value: 0, formatValue: formatCurrency(0, row.currency), variation: null }
+          stat.prevRawValue = row.amount
+          if (stat.value !== 0) {
+            stat.variation = _calcVariation(stat.value, stat.prevRawValue)
+          }
+          statMap.set(key, stat as Stat)
+        })
+
+        _updateUI(statMap)
+      })
+
+      const [currentData] = await Promise.all([promiseCurrentData, promisePreviousData])
 
       _currencyList.value = Object.keys(currentData.totalSuccessfulAmountByCurrency)
+
+      // Final cleanup of empty local currency
+      if (_currencyList.value.length > 0) {
+        const keyForLocaleCurrency = `revenue-${localeCurrency.value}`
+        const local = statMap.get(keyForLocaleCurrency);
+        if (local && local.value === 0) statMap.delete(keyForLocaleCurrency);
+      }
+
+      _updateUI(statMap)
 
       const timestamps = dates.map(d => d.getTime())
       const groups = timestamps.reduce((acc, ts) => {
@@ -527,22 +524,6 @@ const _useDealStats = () => {
   }
   // endregion /////
 
-  watch(
-    [() => period.value, () => range.value],
-    async () => {
-      if (!isUseB24.value) {
-        stats.value = updateStateMock()
-        chart.value = updateChartMock()
-        sales.value = updateSalesMock()
-
-        return
-      }
-
-      await loadDeals()
-    },
-    { immediate: true }
-  )
-
   const statsData = computed(() => {
     return stats.value
   })
@@ -567,6 +548,53 @@ const _useDealStats = () => {
     return loading.value
   })
 
+  const daysData = computed(() => eachDayOfInterval(range.value))
+
+  const periodsData = computed<Period[]>(() => {
+    if (daysData.value.length <= 8) {
+      return [
+        'daily'
+      ]
+    }
+
+    if (daysData.value.length <= 31) {
+      return [
+        'daily',
+        'weekly'
+      ]
+    }
+
+    return [
+      'weekly',
+      'monthly'
+    ]
+  })
+
+  watch(
+    [() => period.value, () => range.value],
+    async () => {
+      if (!isUseB24.value) {
+        stats.value = updateStateMock()
+        chart.value = updateChartMock()
+        sales.value = updateSalesMock()
+
+        return
+      }
+
+      nextTick(async () => {
+        await loadDeals()
+      })
+    },
+    { immediate: true }
+  )
+
+  // Ensure the period value is always a valid period
+  watch(periodsData, () => {
+    if (!periodsData.value.includes(period.value)) {
+      period.value = periodsData.value[0]
+    }
+  })
+
   return {
     localeCode,
     localeKey,
@@ -576,12 +604,14 @@ const _useDealStats = () => {
     statsData,
     chartData,
     currencyListData,
+    periodsData,
     salesData,
     isLoading,
     formatCurrency,
     formatDateRange,
     formatDateByPeriod,
     formatDateTimeShort,
+    loadDeals,
     openDeal
   }
 }

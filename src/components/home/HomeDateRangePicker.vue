@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Range } from '../../types'
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useDealStats } from '../../composables/useDealStats'
 import { getLocalTimeZone, CalendarDate, today } from '@internationalized/date'
 import CalendarIcon from '@bitrix24/b24icons-vue/outline/CalendarIcon'
@@ -9,6 +9,8 @@ import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 const { formatDateRange, isLoading } = useDealStats()
 
 const selected = defineModel<Range>({ required: true })
+
+const openPopover = ref(false)
 
 const ranges = [
   { label: 'Last 7 days', days: 7 },
@@ -76,11 +78,23 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
     start: startDate.toDate(getLocalTimeZone()),
     end: endDate.toDate(getLocalTimeZone())
   }
+
+  openPopover.value = false
 }
 </script>
 
 <template>
-  <B24Popover :content="{ align: 'start' }" :modal="true">
+  <B24Button
+    v-for="(range, index) in ranges"
+    :key="index"
+    :label="`${range.label} ${isRangeSelected(range)}`"
+    :color="isRangeSelected(range) ? 'air-primary' : 'air-secondary-accent-1'"
+    size="sm"
+    :disabled="isLoading"
+    @click="selectRange(range)"
+  />
+
+  <B24Popover v-model:open="openPopover" :content="{ align: 'start' }" :modal="true">
     <B24Button
       :icon="CalendarIcon"
       color="air-secondary-accent-1"

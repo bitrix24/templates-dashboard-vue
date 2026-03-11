@@ -1,51 +1,16 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
-import { eachDayOfInterval } from 'date-fns'
-import type { Period, Range } from '../../types'
+import type { Period } from '../../types'
 import { useDealStats } from '../../composables/useDealStats.ts'
 
-const { isLoading } = useDealStats()
+const { isLoading, periodsData } = useDealStats()
 const model = defineModel<Period>({ required: true })
-
-const props = defineProps<{
-  range: Range
-}>()
-
-const days = computed(() => eachDayOfInterval(props.range))
-
-const periods = computed<Period[]>(() => {
-  if (days.value.length <= 8) {
-    return [
-      'daily'
-    ]
-  }
-
-  if (days.value.length <= 31) {
-    return [
-      'daily',
-      'weekly'
-    ]
-  }
-
-  return [
-    'weekly',
-    'monthly'
-  ]
-})
-
-// Ensure the model value is always a valid period
-watch(periods, () => {
-  if (!periods.value.includes(model.value)) {
-    model.value = periods.value[0]
-  }
-})
 </script>
 
 <template>
   <!-- @todo: after UI update fix class transition-colors disabled:pointer-events-auto  -->
   <B24Select
     v-model="model"
-    :items="periods"
+    :items="periodsData"
     color="air-primary"
     size="sm"
     highlight

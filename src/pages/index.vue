@@ -9,8 +9,9 @@ import Bell1Icon from '@bitrix24/b24icons-vue/main/Bell1Icon'
 import PlusLIcon from '@bitrix24/b24icons-vue/outline/PlusLIcon'
 import SendIcon from '@bitrix24/b24icons-vue/outline/SendIcon'
 import AddPersonIcon from '@bitrix24/b24icons-vue/outline/AddPersonIcon'
+import DatabaseIcon from '@bitrix24/b24icons-vue/outline/DatabaseIcon'
 
-const { period, range, isLoading } = useDealStats()
+const { period, range, isLoading, loadDeals } = useDealStats()
 
 const { isNotificationsSlideoverOpen, isBxMobile } = useDashboard()
 const b24Instance = useB24()
@@ -86,9 +87,18 @@ await initPage()
       <!-- @todo: after UI update fix :b24ui -->
       <B24DashboardToolbar class="scrollbar-thin" :b24ui="{ root: 'sm:px-4' }">
         <template #left>
+          <B24Button
+            :icon="DatabaseIcon"
+            label="Reload"
+            color="air-secondary"
+            size="sm"
+            loading-auto
+            @click="loadDeals"
+          />
+
           <HomeDateRangePicker v-model="range" />
 
-          <HomePeriodSelect v-model="period" :range="range" />
+          <HomePeriodSelect v-model="period" />
         </template>
       </B24DashboardToolbar>
     </template>

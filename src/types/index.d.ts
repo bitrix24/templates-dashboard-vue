@@ -32,8 +32,11 @@ export interface Member {
 
 export interface Stat {
   title: string
+  descriptions?: string
   icon: IconComponent
-  value: number | string
+  prevRawValue?: number
+  value: number
+  formatValue: string
   variation: null | number
   formatter?: (value: number, currencyId: string) => string
 }
