@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useDealStats } from '../../composables/useDealStats'
+import { useDealStats22 } from '../../composables/useDealStats22.ts'
 import TrendUpIcon from '@bitrix24/b24icons-vue/outline/TrendUpIcon'
 import TrendDownIcon from '@bitrix24/b24icons-vue/outline/TrendDownIcon'
 import HelpIcon from '@bitrix24/b24icons-vue/main/HelpIcon'
 
-const { statsData } = useDealStats()
+const { statsData } = useDealStats22()
 </script>
 
 <template>

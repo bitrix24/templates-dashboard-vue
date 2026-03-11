@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { Range } from '../../types'
 import { ref, computed } from 'vue'
-import { useDealStats } from '../../composables/useDealStats'
+import { useDealStats22 } from '../../composables/useDealStats22.ts'
 import { getLocalTimeZone, CalendarDate, today } from '@internationalized/date'
 import CalendarIcon from '@bitrix24/b24icons-vue/outline/CalendarIcon'
 import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 
-const { formatDateRange, isLoading } = useDealStats()
+const { formatDateRange, isLoading } = useDealStats22()
 
 const selected = defineModel<Range>({ required: true })
 
@@ -42,10 +42,10 @@ const calendarRange = computed({
   }
 })
 
-const currentDate = today(getLocalTimeZone())
-let startDate = currentDate.copy()
-
 const isRangeSelected = (range: { days?: number, months?: number, years?: number }) => {
+  const currentDate = today(getLocalTimeZone())
+  let startDate = currentDate.copy()
+
   if (!selected.value.start || !selected.value.end) return false
 
   if (range.days) {
@@ -55,9 +55,16 @@ const isRangeSelected = (range: { days?: number, months?: number, years?: number
   } else if (range.years) {
     startDate = startDate.subtract({ years: range.years })
   }
-
   const selectedStart = toCalendarDate(selected.value.start)
   const selectedEnd = toCalendarDate(selected.value.end)
+  console.log(
+      selectedStart.toString(),
+    startDate.toString(),
+    selectedStart.compare(startDate),
+      selectedEnd.toString(),
+    currentDate.toString(),
+    selectedEnd.compare(currentDate)
+  )
 
   return selectedStart.compare(startDate) === 0 && selectedEnd.compare(currentDate) === 0
 }
@@ -84,22 +91,12 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
 </script>
 
 <template>
-  <B24Button
-    v-for="(range, index) in ranges"
-    :key="index"
-    :label="`${range.label} ${isRangeSelected(range)}`"
-    :color="isRangeSelected(range) ? 'air-primary' : 'air-secondary-accent-1'"
-    size="sm"
-    :disabled="isLoading"
-    @click="selectRange(range)"
-  />
-
   <B24Popover v-model:open="openPopover" :content="{ align: 'start' }" :modal="true">
     <B24Button
       :icon="CalendarIcon"
       color="air-secondary-accent-1"
       size="sm"
-      class="group data-[state=open]:bg-(--ui-btn-background-hover)"
+      class="hidden sm:flex group data-[state=open]:bg-(--ui-btn-background-hover)"
       :b24ui="{ label: 'flex-1' }"
       :disabled="isLoading"
       use-dropdown
@@ -123,31 +120,24 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
     </B24Button>
 
     <template #content>
-      <div class="flex items-stretch sm:divide-x divide-(--ui-color-divider-default)">
-        <div class="hidden sm:flex flex-col justify-center">
-          <B24Button
-            v-for="(range, index) in ranges"
-            :key="index"
-            :label="range.label"
-            color="air-tertiary"
-            class="rounded-none px-4"
-            :class="[isRangeSelected(range) ? 'bg-(--ui-btn-background-hover)' : 'hover:bg-(--ui-btn-background-hover)']"
-            truncate
-            :disabled="isLoading"
-            @click="selectRange(range)"
-          />
-        </div>
-
-        <B24Calendar
-          v-model="calendarRange"
-          class="p-2"
-          :number-of-months="2"
-          size="sm"
-          range
-          :disabled="isLoading"
-          :fixed-weeks="false"
-        />
-      </div>
+      <B24Calendar
+        v-model="calendarRange"
+        class="p-2"
+        :number-of-months="2"
+        size="sm"
+        range
+        :disabled="isLoading"
+        :fixed-weeks="false"
+      />
     </template>
   </B24Popover>
+  <B24Button
+    v-for="(range, index) in ranges"
+    :key="index"
+    :label="range.label"
+    :color="isRangeSelected(range) ? 'air-primary' : 'air-secondary-accent-1'"
+    size="sm"
+    :disabled="isLoading"
+    @click="selectRange(range)"
+  />
 </template>

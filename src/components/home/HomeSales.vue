@@ -2,11 +2,11 @@
 import type { TableColumn } from '@bitrix24/b24ui-nuxt'
 import type { TableMeta, Row } from '@tanstack/vue-table'
 import { h, resolveComponent } from 'vue'
-import { useDealStats } from '../../composables/useDealStats'
+import { useDealStats22 } from '../../composables/useDealStats22.ts'
 import type { Sale } from '../../types'
 import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 
-const { salesData, isLoading, formatCurrency, formatDateTimeShort, openDeal } = useDealStats()
+const { salesData, isLoading, formatCurrency, formatDateTimeShort, open } = useDealStats22()
 const B24Badge = resolveComponent('B24Badge')
 const B24Button = resolveComponent('B24Button')
 const B24Link = resolveComponent('B24Link')
@@ -78,7 +78,7 @@ const columns: TableColumn<Sale>[] = [
         isAction: true,
         onClick: (e: Event) => {
           e.preventDefault()
-          openDeal(row.original)
+          open(row.original)
         },
       }, {
         default: () => row.original.title

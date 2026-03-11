@@ -3,11 +3,11 @@ import { useTemplateRef } from 'vue'
 import { VisXYContainer, VisLine, VisAxis, VisCrosshair, VisTooltip } from '@unovis/vue'
 import { useElementSize } from '@vueuse/core'
 import type { DataRecord } from '../../types'
-import { useDealStats } from '../../composables/useDealStats.ts'
+import { useDealStats22 } from '../../composables/useDealStats22.ts'
 
 const cardRef = useTemplateRef<HTMLElement | null>('cardRef')
 
-const { currencyListData, chartData, formatDateByPeriod, formatCurrency } = useDealStats()
+const { currencyListData, chartData, formatDateByPeriod, formatCurrency } = useDealStats22()
 const { width } = useElementSize(cardRef)
 
 const x = (_: DataRecord, i: number) => i
