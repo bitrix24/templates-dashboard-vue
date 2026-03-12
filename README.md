@@ -52,3 +52,9 @@ pnpm preview
 # As B24 App
 
 1. **used scopes:** `crm`, `user_brief`, `currency`
+
+# Translate
+
+```
+pnpm run translate-ui
+```
