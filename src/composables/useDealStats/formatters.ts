@@ -1,4 +1,21 @@
 /**
+ * Converts a string with HTML entities and tags to plain text.
+ *
+ * The function decodes special characters (e.g., `&nbsp;` -> ` ` or `&euro;` -> `€`),
+ * removes HTML tags, and replaces non-breaking spaces with standard spaces.
+ *
+ * @param {string} html - The original string containing HTML markup or entities.
+ * @returns {string} The stripped string as plain text.
+ *
+ * @example
+ * formatHtmlString('566&nbsp;168.00 &euro;') // Returns: "566 168.00 €"
+ */
+export function stripTags(html: string) {
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  return doc.body.textContent.replace(/\u00a0/g, ' ').trim()
+}
+
+/**
  * Formats a number as a locale-appropriate currency.
  *
  * @param value - Amount to format

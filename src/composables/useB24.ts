@@ -80,10 +80,10 @@ export const useB24 = () => {
         b24,
         [
           LoadDataType.App,
-          LoadDataType.Profile
+          LoadDataType.Profile,
+          LoadDataType.Currency
           // LoadDataType.AppOptions
           // LoadDataType.UserOptions
-          // LoadDataType.Currency
         ]
       )
 

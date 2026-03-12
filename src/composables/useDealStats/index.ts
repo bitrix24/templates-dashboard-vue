@@ -8,7 +8,13 @@ import { SdkError } from '@bitrix24/b24jssdk'
 import * as locales from '@bitrix24/b24ui-nuxt/locale'
 import { useB24 } from '../useB24'
 import { fetchDealsInRange, openDeal } from './api'
-import { formatCurrency, formatDateByPeriod, formatDateRange, formatDateTimeShort } from './formatters'
+import {
+  stripTags,
+  formatCurrency,
+  formatDateByPeriod,
+  formatDateRange,
+  formatDateTimeShort
+} from './formatters'
 import { generateMockStats, generateMockChart, generateMockSales } from './mocks'
 import { getDatesByPeriod, buildChartData, getLatestSales, calculateVariation } from './helpers'
 import ContactIcon from '@bitrix24/b24icons-vue/outline/ContactIcon'
@@ -103,8 +109,18 @@ const _useDealStats = () => {
   // ------------------------------------------------------------------------
   // Formatters (linked to the current locale)
   // ------------------------------------------------------------------------
-  const formatCurrencyLocal = (value: number, currencyId?: string): string => {
-    return formatCurrency(value, currencyId ?? defaultCurrency.value, localeCode.value)
+  const formatCurrencyLocal = (value: number, currencyCode: string): string => {
+    if (!isUseB24.value) {
+      return formatCurrency(value, currencyCode, localeCode.value)
+    }
+
+    return stripTags(
+      b24Instance.getHelper()!.currency.format(
+        value,
+        currencyCode,
+        localeCode.value
+      )
+    )
   }
 
   const formatDateByPeriodLocal = (date: Date): string => {
@@ -130,13 +146,13 @@ const _useDealStats = () => {
     stats.value = Array.from(statMap.values())
   }
 
-  function buildRevenue(locale: string, currency: string): Stat {
+  function buildRevenue(currency: string): Stat {
     return {
       title: 'Revenue',
       descriptions: `The total amount in ${currency} of won deals across all pipelines during the reporting period.`,
       icon: WalletIcon,
       value: 0,
-      formatValue: formatCurrency(0, currency, locale),
+      formatValue: formatCurrencyLocal(0, currency),
       variation: null
     } as Stat
   }
@@ -211,9 +227,9 @@ const _useDealStats = () => {
 
           current.revenueValue.forEach((row) => {
             const key = `revenue-${row.currency}`
-            const stat = statMap.get(key) || buildRevenue(localeCode.value, row.currency)
+            const stat = statMap.get(key) || buildRevenue(row.currency)
             stat.value = row.amount
-            stat.formatValue = formatCurrency(row.amount, row.currency, localeCode.value)
+            stat.formatValue = formatCurrencyLocal(row.amount, row.currency)
             if (typeof stat.prevRawValue !== 'undefined') {
               stat.variation = calculateVariation(stat.value, stat.prevRawValue)
             }
@@ -245,7 +261,7 @@ const _useDealStats = () => {
 
           prev.revenueValue.forEach((row) => {
             const key = `revenue-${row.currency}`
-            const stat = statMap.get(key) || buildRevenue(localeCode.value, row.currency)
+            const stat = statMap.get(key) || buildRevenue(row.currency)
             stat.prevRawValue = row.amount
             if (stat.value !== 0) {
               stat.variation = calculateVariation(stat.value, stat.prevRawValue)
