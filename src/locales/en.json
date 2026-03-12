@@ -1,0 +1,16 @@
+{
+  "page": {
+    "index": {
+      "seo": {
+        "title": "Home"
+      },
+      "menu": {
+        "main": "Add User"
+      },
+      "message": {
+        "title": "See new deals",
+        "line1": "Remove user"
+      }
+    }
+  }
+}

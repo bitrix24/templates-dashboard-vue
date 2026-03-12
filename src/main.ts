@@ -1,7 +1,8 @@
 import './assets/css/main.css'
-import { createApp } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
+import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import { i18n } from './i18n'
 import { routes, handleHotUpdate } from 'vue-router/auto-routes'
 import { setupLayouts } from 'virtual:generated-layouts'
 import b24UiPlugin from '@bitrix24/b24ui-nuxt/vue-plugin'
@@ -17,6 +18,7 @@ const router = createRouter({
 })
 
 app.use(router)
+app.use(i18n)
 app.use(b24UiPlugin)
 
 app.mount('#app')

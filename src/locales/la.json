@@ -1,0 +1,16 @@
+{
+  "page": {
+    "index": {
+      "seo": {
+        "title": "Inicio"
+      },
+      "menu": {
+        "main": "Agregar Usuario"
+      },
+      "message": {
+        "title": "Ver nuevos tratos",
+        "line1": "Eliminar usuario"
+      }
+    }
+  }
+}

@@ -7,14 +7,9 @@ import { eachDayOfInterval, sub } from 'date-fns'
 import { SdkError } from '@bitrix24/b24jssdk'
 import * as locales from '@bitrix24/b24ui-nuxt/locale'
 import { useB24 } from '../useB24'
+import { getCurrentLocale } from '../../i18n'
 import { fetchDealsInRange, openDeal } from './api'
-import {
-  stripTags,
-  formatCurrency,
-  formatDateByPeriod,
-  formatDateRange,
-  formatDateTimeShort
-} from './formatters'
+import { stripTags, formatCurrency, formatDateByPeriod, formatDateRange, formatDateTimeShort } from './formatters'
 import { generateMockStats, generateMockChart, generateMockSales } from './mocks'
 import { getDatesByPeriod, buildChartData, getLatestSales, calculateVariation } from './helpers'
 import ContactIcon from '@bitrix24/b24icons-vue/outline/ContactIcon'
@@ -46,10 +41,6 @@ const _useDealStats = () => {
   const loading = ref<boolean>(false)
   const currencyList = ref<string[]>([])
 
-  // Localization (cache after first definition)
-  const _localeCode = ref<string | null>(null)
-  const _localeKey = ref<string | null>(null)
-
   // ------------------------------------------------------------------------
   // Bitrix24
   //-----------------------------------------------------------------------
@@ -62,37 +53,9 @@ const _useDealStats = () => {
   // Computed locales
   // ------------------------------------------------------------------------
   const localeCode = computed(() => {
-    if (_localeCode.value !== null) return _localeCode.value
-
-    if (isUseB24.value) {
-      _localeCode.value = locales[$b24.getLang()]?.locale
-    }
-    if (!_localeCode.value && typeof window !== 'undefined' && window.navigator?.language.includes('ru')) {
-      _localeCode.value = 'ru-RU'
-    }
-    if (!_localeCode.value) {
-      _localeCode.value = 'en-US'
-    }
-
-    $logger.debug('set locale code', { locale: _localeCode.value })
-    return _localeCode.value
-  })
-
-  const localeKey = computed(() => {
-    if (_localeKey.value !== null) return _localeKey.value
-
-    if (isUseB24.value) {
-      _localeKey.value = locales[$b24.getLang()]?.code
-    }
-    if (!_localeKey.value && typeof window !== 'undefined' && window.navigator?.language.includes('ru')) {
-      _localeKey.value = 'ru'
-    }
-    if (!_localeKey.value) {
-      _localeKey.value = 'en'
-    }
-
-    $logger.debug('set locale key', { locale: _localeKey.value })
-    return _localeKey.value
+    const code = getCurrentLocale()
+    const localeKey = code as keyof typeof locales
+    return locales[localeKey]?.locale
   })
 
   /**
@@ -397,7 +360,6 @@ const _useDealStats = () => {
 
     // Locales (in case they are needed in the template)
     localeCode,
-    localeKey,
     defaultCurrency
   }
 }

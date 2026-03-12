@@ -1,0 +1,16 @@
+{
+  "page": {
+    "index": {
+      "seo": {
+        "title": "Página Inicial"
+      },
+      "menu": {
+        "main": "Adicionar Usuário"
+      },
+      "message": {
+        "title": "Ver novos negócios",
+        "line1": "Remover usuário"
+      }
+    }
+  }
+}

@@ -1,19 +1,30 @@
 <script setup lang="ts">
-import type { Result } from '@bitrix24/b24jssdk'
-import { ref, onMounted } from 'vue'
+import type { B24Frame, Result } from '@bitrix24/b24jssdk'
+import { ref, computed, onMounted } from 'vue'
+import { useHead } from '@unhead/vue'
+import { useI18n } from 'vue-i18n'
+import * as locales from '@bitrix24/b24ui-nuxt/locale'
+import { loadLocaleMessages } from './i18n.ts'
 import { useB24 } from './composables/useB24'
 import { useDashboard } from './composables/useDashboard.ts'
 import { sleepAction } from './utils'
 import CloudErrorIcon from '@bitrix24/b24icons-vue/main/CloudErrorIcon'
 
 const toast = useToast()
+const { locale } = useI18n()
 const b24Instance = useB24()
 const { isBxMobile } = useDashboard()
 
 const isLoading = ref(true)
 
 const toaster = { position: isBxMobile.value ? 'bottom-center' : 'top-right' }
-// const loc = ref(locales.en)
+
+const currentLocaleData = computed(() => {
+  const currentKey = locale.value as keyof typeof locales
+  return locales[currentKey] || locales['en']
+})
+
+useHead({ htmlAttrs: { lang: currentLocaleData.value.locale } })
 
 onMounted(async () => {
   const result: Result = await b24Instance.init()
@@ -24,14 +35,10 @@ onMounted(async () => {
       color: 'air-primary-alert',
       icon: CloudErrorIcon
     })
+  } else {
+    const targetCode = (b24Instance.get() as B24Frame).getLang()
+    await loadLocaleMessages(targetCode)
   }
-
-  // @todo fix this - current locale from B24 - :locale="loc"
-  // nextTick(() => {
-  //   if (b24Instance.isInit()) {
-  //     loc.value = locales[localeKey.value]
-  //   }
-  // })
 
   // Used to display the connection loading indicator
   await sleepAction(1000)
@@ -41,7 +48,7 @@ onMounted(async () => {
 
 <template>
   <Suspense>
-    <B24App :toaster="toaster">
+    <B24App :toaster="toaster" :locale="currentLocaleData">
       <HomeLoader v-if="isLoading" />
       <RouterView v-else />
     </B24App>

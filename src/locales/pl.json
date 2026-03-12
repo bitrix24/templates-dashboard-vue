@@ -1,0 +1,16 @@
+{
+  "page": {
+    "index": {
+      "seo": {
+        "title": "Strona główna"
+      },
+      "menu": {
+        "main": "Dodaj użytkownika"
+      },
+      "message": {
+        "title": "Zobacz nowe oferty",
+        "line1": "Usuń użytkownika"
+      }
+    }
+  }
+}

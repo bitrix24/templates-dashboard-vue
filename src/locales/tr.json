@@ -1,0 +1,16 @@
+{
+  "page": {
+    "index": {
+      "seo": {
+        "title": "Ana Sayfa"
+      },
+      "menu": {
+        "main": "Kullanıcı Ekle"
+      },
+      "message": {
+        "title": "Yeni teklifleri gör",
+        "line1": "Kullanıcıyı kaldır"
+      }
+    }
+  }
+}

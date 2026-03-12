@@ -1,0 +1,16 @@
+{
+  "page": {
+    "index": {
+      "seo": {
+        "title": "Accueil"
+      },
+      "menu": {
+        "main": "Ajouter un utilisateur"
+      },
+      "message": {
+        "title": "Voir les nouvelles affaires",
+        "line1": "Supprimer l'utilisateur"
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@
 import type { B24Frame } from '@bitrix24/b24jssdk'
 import type { DropdownMenuItem } from '@bitrix24/b24ui-nuxt'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDealStats } from '../composables/useDealStats'
 import { useDashboard } from '../composables/useDashboard'
 import { useB24 } from '../composables/useB24'
@@ -11,6 +12,7 @@ import SendIcon from '@bitrix24/b24icons-vue/outline/SendIcon'
 import AddPersonIcon from '@bitrix24/b24icons-vue/outline/AddPersonIcon'
 import DatabaseIcon from '@bitrix24/b24icons-vue/outline/DatabaseIcon'
 
+const { t } = useI18n()
 const { period, range, isLoading, loadDeals } = useDealStats()
 
 const { isNotificationsSlideoverOpen, isBxMobile } = useDashboard()
@@ -21,31 +23,36 @@ const isUseB24 = computed<boolean>(() => {
   return b24Instance.isInit()
 })
 
-const page = {
-  title: 'Home',
-  addButton: {
-    isOnlyBitrixMobile: false,
-    items: [
-      {
-        label: 'New mail',
-        icon: SendIcon,
-        to: '/inbox'
-      },
-      {
-        label: 'New customer',
-        icon: AddPersonIcon,
-        to: '/customers'
-      }
-    ] satisfies DropdownMenuItem[]
+const page = computed(() => {
+  return {
+    title: t('page.index.seo.title'),
+    addButton: {
+      isOnlyBitrixMobile: false,
+      items: [
+        {
+          label: 'New mail',
+          icon: SendIcon,
+          to: '/inbox'
+        },
+        {
+          label: 'New customer',
+          icon: AddPersonIcon,
+          to: '/customers'
+        }
+      ] satisfies DropdownMenuItem[]
+    }
   }
-}
+})
 
 async function initPage() {
   if (!isUseB24.value) {
     return
   }
 
-  $b24.parent.setTitle(page.title)
+  /**
+   * Tracking locale via watch is not required, since in the Bitrix24 interface, changing the language initiates a full page reload.
+   */
+  $b24.parent.setTitle(page.value.title)
 }
 
 await initPage()

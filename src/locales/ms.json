@@ -1,0 +1,16 @@
+{
+  "page": {
+    "index": {
+      "seo": {
+        "title": "Laman Utama"
+      },
+      "menu": {
+        "main": "Tambah Pengguna"
+      },
+      "message": {
+        "title": "Lihat tawaran baharu",
+        "line1": "Buang pengguna"
+      }
+    }
+  }
+}
