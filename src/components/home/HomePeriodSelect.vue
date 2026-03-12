@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { Period } from '../../types'
-import { useDealStats22 } from '../../composables/useDealStats22.ts'
+import { useDealStats } from '../../composables/useDealStats'
 
-const { isLoading, periodsData } = useDealStats22()
+const { isLoading, periodsData } = useDealStats()
 const model = defineModel<Period>({ required: true })
 </script>
 

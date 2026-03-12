@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useTemplateRef } from 'vue'
-import { VisXYContainer, VisLine, VisAxis, VisCrosshair, VisTooltip } from '@unovis/vue'
-import { useElementSize } from '@vueuse/core'
 import type { DataRecord } from '../../types'
-import { useDealStats22 } from '../../composables/useDealStats22.ts'
+import { useTemplateRef, computed } from 'vue'
+import { VisXYContainer, VisLine, VisAxis, VisArea, VisCrosshair, VisTooltip } from '@unovis/vue'
+import { useElementSize } from '@vueuse/core'
+import { useDealStats } from '../../composables/useDealStats'
 
 const cardRef = useTemplateRef<HTMLElement | null>('cardRef')
 
-const { currencyListData, chartData, formatDateByPeriod, formatCurrency } = useDealStats22()
+const { currencyListData, chartData, formatDateByPeriod, formatCurrency } = useDealStats()
 const { width } = useElementSize(cardRef)
 
 const x = (_: DataRecord, i: number) => i
@@ -35,6 +35,14 @@ const xTicks = (i: number) => {
 
   return formatDateByPeriod(chartData.value[i].date)
 }
+
+const isOneCurrency = computed(() => {
+  return currencyListData.value.length < 2
+})
+
+const firstCurrency = computed(() => {
+  return currencyListData.value[0]!
+})
 </script>
 
 <template>
@@ -44,7 +52,16 @@ const xTicks = (i: number) => {
         <p class="text-xs text-(--b24ui-typography-label-color) uppercase mb-1.5">
           Revenue
         </p>
-        <div class="flex items-center flex-wrap gap-2 sm:gap-5">
+        <p
+          v-if="isOneCurrency"
+          class="text-3xl text-(--b24ui-typography-legend-color) font-semibold"
+        >
+          {{ formatCurrency(getTotal(firstCurrency), firstCurrency) }}
+        </p>
+        <div
+          v-else
+          class="flex items-center flex-wrap gap-2 sm:gap-5"
+        >
           <span
             v-for="(currency) in currencyListData"
             :key="currency"
@@ -65,6 +82,14 @@ const xTicks = (i: number) => {
       <VisLine
         :x="x"
         :y="y"
+        :color="isOneCurrency ? 'var(--ui-color-accent-main-primary-alt-2)' : undefined"
+      />
+      <VisArea
+        v-if="isOneCurrency"
+        :x="x"
+        :y="y"
+        color="var(--ui-color-accent-main-primary-alt)"
+        :opacity="0.1"
       />
 
       <VisAxis

@@ -2,7 +2,7 @@
 import type { B24Frame } from '@bitrix24/b24jssdk'
 import type { DropdownMenuItem } from '@bitrix24/b24ui-nuxt'
 import { computed } from 'vue'
-import { useDealStats22 } from '../composables/useDealStats22.ts'
+import { useDealStats } from '../composables/useDealStats'
 import { useDashboard } from '../composables/useDashboard'
 import { useB24 } from '../composables/useB24'
 import Bell1Icon from '@bitrix24/b24icons-vue/main/Bell1Icon'
@@ -11,7 +11,7 @@ import SendIcon from '@bitrix24/b24icons-vue/outline/SendIcon'
 import AddPersonIcon from '@bitrix24/b24icons-vue/outline/AddPersonIcon'
 import DatabaseIcon from '@bitrix24/b24icons-vue/outline/DatabaseIcon'
 
-const { period, range, isLoading, loadDeals } = useDealStats22()
+const { period, range, isLoading, loadDeals } = useDealStats()
 
 const { isNotificationsSlideoverOpen, isBxMobile } = useDashboard()
 const b24Instance = useB24()

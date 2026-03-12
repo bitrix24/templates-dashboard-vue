@@ -26,6 +26,7 @@ export interface PartialStats {
   revenueValue: { amount: number, currency: string }[]
 }
 
+// Mapping stage semantics to statuses
 const mapStatus: Record<Semantic, SaleStatus> = {
   P: 'processing',
   S: 'success',
@@ -51,7 +52,7 @@ export async function fetchDealsInRange(
   b24: B24Frame,
   start: Date,
   end: Date,
-  defLocale: string,
+  defaultCurrency: string,
   cb?: (partial: PartialStats) => void
 ): Promise<FetchDealsResult> {
   // We bring dates to the beginning and end of the day
@@ -76,6 +77,8 @@ export async function fetchDealsInRange(
         '>=closedate': Text.toB24Format(from),
         '<=closedate': Text.toB24Format(to),
         '=closed': true,
+        // You can pick one currency, but the real thrill begins when there are many.
+        // '=currencyId': defaultCurrency
       },
       select: [
         'id',
@@ -110,7 +113,7 @@ export async function fetchDealsInRange(
         // Successful transactions (semantics S)
         if (row.stageSemanticId === 'S') {
           successfulDeals++
-          const currency = row.currencyId || defLocale
+          const currency = row.currencyId || defaultCurrency
           totalSuccessfulAmountByCurrency[currency] =
             (totalSuccessfulAmountByCurrency[currency] || 0) + row.opportunity
         }
@@ -137,7 +140,7 @@ export async function fetchDealsInRange(
         const revenueEntries = Object.entries(totalSuccessfulAmountByCurrency)
         const revenueValue: { amount: number, currency: string }[] = revenueEntries.length
           ? revenueEntries.map(([currency, amount]) => ({ amount, currency }))
-          : [{ amount: 0, currency: defLocale }]
+          : [{ amount: 0, currency: defaultCurrency }]
 
         cb({
           customers: uniqueCustomers.size,

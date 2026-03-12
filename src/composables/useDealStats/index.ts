@@ -1,41 +1,21 @@
+import type { DataRecord, Period, Range, Sale, Stat } from '../../types'
 import type { B24Frame } from '@bitrix24/b24jssdk'
-import { ref, shallowRef, computed, watch } from 'vue'
+import type { PartialStats } from './api'
+import { ref, shallowRef, computed, watch, nextTick } from 'vue'
 import { createSharedComposable } from '@vueuse/core'
-import { sub } from 'date-fns'
+import { eachDayOfInterval, sub } from 'date-fns'
 import { SdkError } from '@bitrix24/b24jssdk'
 import * as locales from '@bitrix24/b24ui-nuxt/locale'
-import { fetchDealsInRange, openDeal, type PartialStats } from './api'
+import { useB24 } from '../useB24'
+import { fetchDealsInRange, openDeal } from './api'
 import { formatCurrency, formatDateByPeriod, formatDateRange, formatDateTimeShort } from './formatters'
 import { generateMockStats, generateMockChart, generateMockSales } from './mocks'
-import { getDatesByPeriod, buildChartData, getLatestSales } from './helpers'
-
-// Constants
+import { getDatesByPeriod, buildChartData, getLatestSales, calculateVariation } from './helpers'
 import ContactIcon from '@bitrix24/b24icons-vue/outline/ContactIcon'
 import GraphsDiagramIcon from '@bitrix24/b24icons-vue/outline/GraphsDiagramIcon'
 import WalletIcon from '@bitrix24/b24icons-vue/outline/WalletIcon'
 import ShoppingCartIcon from '@bitrix24/b24icons-vue/outline/ShoppingCartIcon'
-
-// Types from global types
-import type { DataRecord, Period, Range, Sale, Stat } from '../../types'
-
-// Mapping stage semantics to statuses (used in api.ts, but duplicated for local use)
-const mapStatus = {
-  P: 'processing',
-  S: 'success',
-  F: 'failed',
-} as const
-
-
-export interface MockOptions {
-  /** Локаль для форматирования */
-  locale: string
-  /** Default currency */
-  currency: string
-  /** Aggregation period (for the chart) */
-  period?: Period
-  /** Date range (for chart) */
-  range?: Range
-}
+import CloudErrorIcon from '@bitrix24/b24icons-vue/main/CloudErrorIcon'
 
 /**
  * The main component for working with deal statistics.
@@ -43,6 +23,8 @@ export interface MockOptions {
  * and also manages downloads, periods, and date ranges.
  */
 const _useDealStats = () => {
+  const toast = useToast()
+
   // ------------------------------------------------------------------------
   // States
   // ------------------------------------------------------------------------
@@ -107,7 +89,10 @@ const _useDealStats = () => {
     return _localeKey.value
   })
 
-  // Default currency (can be improved by getting it from portal settings)
+  /**
+   * Default currency
+   * @todo improved by getting it from portal settings
+   */
   const defaultCurrency = computed(() => {
     if (typeof window !== 'undefined' && window.navigator?.language.includes('ru')) {
       return 'RUB'
@@ -139,82 +124,26 @@ const _useDealStats = () => {
   // ------------------------------------------------------------------------
 
   /**
-   * Resets statistics cards to empty values (used before loading).
+   * Update statistics cards values
    */
-  function resetStats(): void {
-    stats.value = [
-      {
-        title: 'Customers',
-        icon: ContactIcon,
-        value: 0,
-        variation: null,
-      },
-      {
-        title: 'Conversions',
-        icon: GraphsDiagramIcon,
-        value: 0,
-        variation: null,
-      },
-      {
-        title: 'Orders',
-        icon: ShoppingCartIcon,
-        value: 0,
-        variation: null,
-      },
-      {
-        title: 'Revenue',
-        icon: WalletIcon,
-        value: formatCurrencyLocal(0, defaultCurrency.value),
-        variation: null,
-      },
-    ]
+  function updateStats(statMap: Map<string, Stat>) {
+    stats.value = Array.from(statMap.values())
   }
 
-  /**
-   * Updates statistics cards based on partial data.
-   * @param partial - Partial data (customers, conversions, orders, revenue by currency)
-   */
-  function updateStatsFromPartial(partial: PartialStats): void {
-    const revenueValues = Object.entries(partial.revenue).map(([currency, amount]) =>
-      formatCurrencyLocal(amount, currency)
-    )
-
-    stats.value = [
-      {
-        title: 'Customers',
-        icon: ContactIcon,
-        value: partial.customers,
-        variation: null,
-      },
-      {
-        title: 'Conversions',
-        icon: GraphsDiagramIcon,
-        value: partial.conversions,
-        variation: null,
-      },
-      {
-        title: 'Orders',
-        icon: ShoppingCartIcon,
-        value: partial.orders,
-        variation: null,
-      },
-      // There can be multiple currencies for income—we'll show them all, but the original had one line.
-      // Here, we'll leave it as is: the first currency in the list or an empty line.
-      // In a real project, it would be worth considering displaying multiple currencies.
-      ...(revenueValues.length > 0
-        ? revenueValues.map((row) => ({
-          title: 'Revenue',
-          icon: WalletIcon,
-          value: row,
-          variation: null,
-        }))
-        : []),
-    ]
+  function buildRevenue(locale: string, currency: string): Stat {
+    return {
+      title: 'Revenue',
+      descriptions: `The total amount in ${currency} of won deals across all pipelines during the reporting period.`,
+      icon: WalletIcon,
+      value: 0,
+      formatValue: formatCurrency(0, currency, locale),
+      variation: null
+    } as Stat
   }
 
   // ------------------------------------------------------------------------
-// Loading data (real or mock)
-// ------------------------------------------------------------------------
+  // Loading data (real or mock)
+  // ------------------------------------------------------------------------
 
   /**
    * Loads deals from the CRM and updates the stats, chart, sales, and currencyList statuses.
@@ -224,23 +153,22 @@ const _useDealStats = () => {
       loading.value = true
 
       if (!isUseB24.value) {
-        // Development mode / without B24 - using mocks
-        const mockOptions: MockOptions = {
-          locale: localeCode.value,
-          currency: defaultCurrency.value,
-          period: period.value,
-          range: range.value,
-        }
+        // Without B24 - using mocks
         stats.value = generateMockStats(localeCode.value, defaultCurrency.value)
         chart.value = generateMockChart(period.value, range.value, defaultCurrency.value)
-        sales.value = generateMockSales()
+        sales.value = generateMockSales(defaultCurrency.value)
         return
       }
 
       await processCrmData()
     } catch (error) {
-      $logger.error('Error loading deals', { error })
-      // Здесь можно добавить состояние ошибки для отображения в UI
+      toast.add({
+        title: 'Error',
+        description: error instanceof Error ? error.message : `${error}`,
+        color: 'air-primary-alert',
+        icon: CloudErrorIcon
+      })
+      $logger.error('Error loading', { error })
     } finally {
       loading.value = false
     }
@@ -255,42 +183,108 @@ const _useDealStats = () => {
     const previousStart = sub(range.value.start, { years: 1 })
     const previousEnd = sub(range.value.end, { years: 1 })
 
-    // Reset cards before loading
-    resetStats()
-
     try {
+      // Reset statistics cards before loading
+      const statMap = new Map<string, Stat>([
+        ['customers', { title: 'Clients', descriptions: 'The number of unique clients (Company or Contact) from closed deals across all pipelines during the reporting period.', icon: ContactIcon, value: 0, formatValue: '0', variation: null }],
+        ['orders', { title: 'Total Deals', descriptions: 'The total number of deals across all pipelines during the reporting period.', icon: ShoppingCartIcon, value: 0, formatValue: '0', variation: null }],
+        ['conversions', { title: 'Won Deals', descriptions: 'The number of successfully closed deals across all pipelines during the reporting period.', icon: GraphsDiagramIcon, value: 0, formatValue: '0', variation: null }]
+      ])
+
+      updateStats(statMap)
+
       // Loading data for the current period with partial updating of cards
       const currentPromise = fetchDealsInRange(
         $b24,
         range.value.start,
         range.value.end,
-        (partial) => updateStatsFromPartial(partial)
+        defaultCurrency.value,
+        (current: PartialStats) => {
+          (['customers', 'conversions', 'orders'] as const).forEach(k => {
+            const stat = statMap.get(k)!
+            stat.value = current[k]
+            stat.formatValue = String(current[k])
+            if (typeof stat.prevRawValue !== 'undefined') {
+              stat.variation = calculateVariation(stat.value, stat.prevRawValue)
+            }
+          })
+
+          current.revenueValue.forEach((row) => {
+            const key = `revenue-${row.currency}`
+            const stat = statMap.get(key) || buildRevenue(localeCode.value, row.currency)
+            stat.value = row.amount
+            stat.formatValue = formatCurrency(row.amount, row.currency, localeCode.value)
+            if (typeof stat.prevRawValue !== 'undefined') {
+              stat.variation = calculateVariation(stat.value, stat.prevRawValue)
+            }
+            statMap.set(key, stat as Stat)
+          })
+
+          updateStats(statMap)
+        }
       )
 
       // Load data for the previous period
-      const previousPromise = fetchDealsInRange($b24, previousStart, previousEnd)
+      const previousPromise = fetchDealsInRange(
+        $b24,
+        previousStart,
+        previousEnd,
+        defaultCurrency.value,
+        (prev: PartialStats) => {
+          (['customers', 'conversions', 'orders']  as const).forEach(k => {
+            if (!statMap.has(k)) {
+              return
+            }
 
-      const [currentResult, previousResult] = await Promise.all([
+            const stat = statMap.get(k)!
+            stat.prevRawValue = prev[k]
+            if (stat.value !== 0) {
+              stat.variation = calculateVariation(stat.value, stat.prevRawValue)
+            }
+          })
+
+          prev.revenueValue.forEach((row) => {
+            const key = `revenue-${row.currency}`
+            const stat = statMap.get(key) || buildRevenue(localeCode.value, row.currency)
+            stat.prevRawValue = row.amount
+            if (stat.value !== 0) {
+              stat.variation = calculateVariation(stat.value, stat.prevRawValue)
+            }
+            statMap.set(key, stat as Stat)
+          })
+
+          updateStats(statMap)
+        }
+      )
+
+      const [currentResponse] = await Promise.all([
         currentPromise,
         previousPromise
       ])
 
       // We save a list of currencies encountered in successful transactions of the current period
-      currencyList.value = Object.keys(currentResult.totalSuccessfulAmountByCurrency)
+      currencyList.value = Object.keys(currentResponse.totalSuccessfulAmountByCurrency)
+
+      // Final cleanup of empty local default currency
+      if (currencyList.value.length > 0) {
+        const keyForDefaultCurrency = `revenue-${defaultCurrency.value}`
+        const local = statMap.get(keyForDefaultCurrency);
+        if (local && local.value === 0) {
+          statMap.delete(keyForDefaultCurrency)
+        }
+      }
+      updateStats(statMap)
 
       // Plotting data for the chart (only successful trades)
-      chart.value = buildChartData(currentResult.rows, dates)
+      chart.value = buildChartData(currentResponse.rows, dates)
 
       // Last 5 closed deals
-      sales.value = getLatestSales(currentResult.rows, 5)
-
-      $logger.debug('Previous period data', { previousResult })
+      sales.value = getLatestSales(currentResponse.rows, 5)
     } catch (error) {
       if (error instanceof SdkError) {
         $logger.error(`CRM processing error: ${error.message}`, { code: error.code })
-      } else {
-        $logger.error('Unknown error during data processing', { error })
       }
+
       throw error
     }
   }
@@ -298,10 +292,9 @@ const _useDealStats = () => {
   // ------------------------------------------------------------------------
   // Public methods
   // ------------------------------------------------------------------------
-
   /**
    * Opens the deal card in a slider.
-   * @param row - The deal object (must contain editPath)
+   * @param row - must contain editPath
    */
   async function openDealHandler(row: Sale) {
     if (!isUseB24.value || !row.editPath) return
@@ -309,44 +302,74 @@ const _useDealStats = () => {
   }
 
   // ------------------------------------------------------------------------
-  // Reactivity: when the period or range changes, reload the data
-  // ------------------------------------------------------------------------
-  watch(
-    [period, range],
-    async () => {
-      await loadDeals()
-    },
-    { immediate: true }
-  )
-
-  // ------------------------------------------------------------------------
   // Computed properties for the template
   // ------------------------------------------------------------------------
+  const isLoading = computed(() => loading.value)
   const statsData = computed(() => stats.value)
   const chartData = computed(() => chart.value)
   const salesData = computed(() => sales.value)
+  const daysData = computed(() => eachDayOfInterval(range.value))
   const currencyListData = computed(() => {
     if (!isUseB24.value) {
       return [defaultCurrency.value]
     }
     return currencyList.value
   })
-  const isLoading = computed(() => loading.value)
+
+  const periodsData = computed<Period[]>(() => {
+    if (daysData.value.length <= 8) {
+      return [
+        'daily'
+      ]
+    }
+
+    if (daysData.value.length <= 31) {
+      return [
+        'daily',
+        'weekly'
+      ]
+    }
+
+    return [
+      'weekly',
+      'monthly'
+    ]
+  })
+
+  // ------------------------------------------------------------------------
+  // Reactivity: when the period or range changes, reload the data
+  // ------------------------------------------------------------------------
+  watch(
+    [period, range],
+    async () => {
+      nextTick(async () => {
+        await loadDeals()
+      })
+    },
+    { immediate: true }
+  )
+
+  watch(periodsData, () => {
+    if (!periodsData.value.includes(period.value)) {
+      period.value = periodsData.value[0]
+    }
+  })
 
   // ------------------------------------------------------------------------
   // Return value
   // ------------------------------------------------------------------------
   return {
-    // Состояния
+    // States
     range,
     period,
+    isLoading,
     statsData,
     chartData,
     currencyListData,
     salesData,
-    isLoading,
+    periodsData,
 
-    // Formatters (public)
+    // Formatters
     formatCurrency: formatCurrencyLocal,
     formatDateRange: formatDateRangeLocal,
     formatDateByPeriod: formatDateByPeriodLocal,
@@ -354,11 +377,12 @@ const _useDealStats = () => {
 
     // Actions
     openDeal: openDealHandler,
+    loadDeals,
 
     // Locales (in case they are needed in the template)
     localeCode,
     localeKey,
-    defaultCurrency,
+    defaultCurrency
   }
 }
 

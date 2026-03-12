@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { Range } from '../../types'
 import { ref, computed } from 'vue'
-import { useDealStats22 } from '../../composables/useDealStats22.ts'
+import { useDealStats } from '../../composables/useDealStats'
 import { getLocalTimeZone, CalendarDate, today } from '@internationalized/date'
 import CalendarIcon from '@bitrix24/b24icons-vue/outline/CalendarIcon'
 import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 
-const { formatDateRange, isLoading } = useDealStats22()
+const { formatDateRange, isLoading } = useDealStats()
 
 const selected = defineModel<Range>({ required: true })
 
@@ -57,14 +57,6 @@ const isRangeSelected = (range: { days?: number, months?: number, years?: number
   }
   const selectedStart = toCalendarDate(selected.value.start)
   const selectedEnd = toCalendarDate(selected.value.end)
-  console.log(
-      selectedStart.toString(),
-    startDate.toString(),
-    selectedStart.compare(startDate),
-      selectedEnd.toString(),
-    currentDate.toString(),
-    selectedEnd.compare(currentDate)
-  )
 
   return selectedStart.compare(startDate) === 0 && selectedEnd.compare(currentDate) === 0
 }

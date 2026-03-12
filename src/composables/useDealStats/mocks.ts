@@ -33,15 +33,6 @@ export function generateMockStats(locale: string, currency: string): Stat[] {
       maxVariation: 20,
     },
     {
-      title: 'Revenue',
-      icon: WalletIcon,
-      minValue: 200000,
-      maxValue: 500000,
-      minVariation: -20,
-      maxVariation: 30,
-      formatter: (val: number) => formatCurrency(val, currency, locale),
-    },
-    {
       title: 'Orders',
       icon: ShoppingCartIcon,
       minValue: 100,
@@ -49,6 +40,15 @@ export function generateMockStats(locale: string, currency: string): Stat[] {
       minVariation: -5,
       maxVariation: 15,
     },
+    {
+      title: 'Revenue',
+      icon: WalletIcon,
+      minValue: 200000,
+      maxValue: 500000,
+      minVariation: -20,
+      maxVariation: 30,
+      formatter: (val: number) => formatCurrency(val, currency, locale),
+    }
   ]
 
   return baseStats.map((stat, index) => {
