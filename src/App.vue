@@ -36,8 +36,10 @@ onMounted(async () => {
       icon: CloudErrorIcon
     })
   } else {
-    const targetCode = (b24Instance.get() as B24Frame).getLang()
-    await loadLocaleMessages(targetCode)
+    if (b24Instance.isInit()) {
+      const targetCode = (b24Instance.get() as B24Frame).getLang()
+      await loadLocaleMessages(targetCode)
+    }
   }
 
   // Used to display the connection loading indicator
