@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import CheckLIcon from '@bitrix24/b24icons-vue/outline/CheckLIcon'
+
+const toast = useToast()
 
 const state = reactive<{ [key: string]: boolean }>({
   email: true,
@@ -23,7 +26,7 @@ const sections = [{
   }]
 }, {
   title: 'Account updates',
-  description: 'Receive updates about Nuxt UI.',
+  description: 'Receive updates.',
   fields: [{
     name: 'weekly_digest',
     label: 'Weekly digest',
@@ -40,7 +43,13 @@ const sections = [{
 }]
 
 async function onChange() {
-  // Do something with data
+  toast.add({
+    title: 'Success',
+    description: 'Your settings have been updated.',
+    icon: CheckLIcon,
+    color: 'air-primary-success'
+  })
+
   console.log(state)
 }
 </script>
@@ -50,11 +59,16 @@ async function onChange() {
     <B24PageCard
       :title="section.title"
       :description="section.description"
-      variant="naked"
+      variant="plain-no-accent"
+      orientation="horizontal"
       class="mb-4"
+      :b24ui="{ container: 'p-0 sm:p-0' }"
     />
 
-    <B24PageCard variant="subtle" :b24ui="{ container: 'divide-y divide-default' }">
+    <B24PageCard
+      variant="tinted-no-accent"
+      :b24ui="{ container: 'divide-y divide-(--ui-color-divider-accent) dark:divide-(--ui-color-divider-default)' }"
+    >
       <B24FormField
         v-for="field in section.fields"
         :key="field.name"

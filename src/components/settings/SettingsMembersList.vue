@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { Member } from '../../types'
 import type { DropdownMenuItem } from '@bitrix24/b24ui-nuxt'
-
-// @todo add icons & colors & see template
+import MoreVerticalLIcon from '@bitrix24/b24icons-vue/outline/MoreVerticalLIcon'
 
 defineProps<{
   members: Member[]
@@ -22,7 +21,7 @@ const items = [
 </script>
 
 <template>
-  <ul role="list" class="divide-y divide-default">
+  <ul role="list" class="divide-y divide-(--ui-color-divider-accent) dark:divide-(--ui-color-divider-default)">
     <li
       v-for="(member, index) in members"
       :key="index"
@@ -48,14 +47,13 @@ const items = [
         <B24Select
           :model-value="member.role"
           :items="['member', 'owner']"
-          color="neutral"
           :b24ui="{ value: 'capitalize', item: 'capitalize' }"
         />
 
         <B24DropdownMenu :items="items" :content="{ align: 'end' }">
           <B24Button
-            ddd-icon="i-lucide-ellipsis-vertical"
-            color="neutral"
+            :icon="MoreVerticalLIcon"
+            color="air-tertiary"
           />
         </B24DropdownMenu>
       </div>

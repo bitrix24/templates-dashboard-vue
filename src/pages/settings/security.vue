@@ -28,7 +28,8 @@ const validate = (state: Partial<PasswordSchema>): FormError[] => {
   <B24PageCard
     title="Password"
     description="Confirm your current password before setting a new one."
-    variant="subtle"
+    variant="tinted"
+    class="mb-4"
   >
     <B24Form
       :schema="passwordSchema"
@@ -54,17 +55,22 @@ const validate = (state: Partial<PasswordSchema>): FormError[] => {
         />
       </B24FormField>
 
-      <B24Button label="Update" class="w-fit" type="submit" />
+      <B24Button
+        label="Update"
+        color="air-primary"
+        class="w-fit"
+        type="submit"
+      />
     </B24Form>
   </B24PageCard>
 
   <B24PageCard
     title="Account"
     description="No longer want to use our service? You can delete your account here. This action is not reversible. All information related to this account will be deleted permanently."
-    class="bg-gradient-to-tl from-error/10 from-5% to-default"
+    variant="tinted-alert"
   >
     <template #footer>
-      <B24Button label="Delete account" color="error" />
+      <B24Button label="Delete account" color="air-primary-alert" />
     </template>
   </B24PageCard>
 </template>

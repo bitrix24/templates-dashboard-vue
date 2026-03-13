@@ -44,7 +44,7 @@ defineShortcuts({
 </script>
 
 <template>
-  <div class="overflow-y-auto divide-y divide-default scrollbar-thin">
+  <div class="overflow-y-auto divide-y divide-(--ui-color-divider-default) scrollbar-thin">
     <div
       v-for="(mail, index) in mails"
       :key="index"

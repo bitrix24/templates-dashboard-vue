@@ -1,36 +1,40 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@bitrix24/b24ui-nuxt'
+import InfoCircleIcon from '@bitrix24/b24icons-vue/outline/InfoCircleIcon'
+import ShieldIcon from '@bitrix24/b24icons-vue/outline/ShieldIcon'
+import Bell1Icon from '@bitrix24/b24icons-vue/main/Bell1Icon'
+import PersonIcon from '@bitrix24/b24icons-vue/outline/PersonIcon'
+import ThreePersonsIcon from '@bitrix24/b24icons-vue/outline/ThreePersonsIcon'
 
-// @todo add icons & colors & see template
 const links = [
   [
     {
       label: 'General',
-      // icon: 'i-lucide-user',
+      icon: PersonIcon,
       to: '/settings',
       exact: true
     },
     {
       label: 'Members',
-      // icon: 'i-lucide-users',
+      icon: ThreePersonsIcon,
       to: '/settings/members'
     },
     {
       label: 'Notifications',
-      // icon: 'i-lucide-bell',
+      icon: Bell1Icon,
       to: '/settings/notifications'
     },
     {
       label: 'Security',
-      // icon: 'i-lucide-shield',
+      icon: ShieldIcon,
       to: '/settings/security'
     }
   ],
   [
     {
       label: 'Documentation',
-      // icon: 'i-lucide-book-open',
-      to: 'https://ui.nuxt.com/docs/getting-started/installation/vue',
+      icon: InfoCircleIcon,
+      to: 'https://bitrix24.github.io/b24ui/docs/getting-started/installation/vue/',
       target: '_blank'
     }
   ]
@@ -38,7 +42,7 @@ const links = [
 </script>
 
 <template>
-  <B24DashboardPanel id="settings" :b24ui="{ body: 'lg:py-12' }">
+  <B24DashboardPanel id="settings" :b24ui="{ body: 'p-4 lg:py-12' }">
     <template #header>
       <B24DashboardNavbar title="Settings" />
 

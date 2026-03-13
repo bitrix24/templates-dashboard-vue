@@ -2,14 +2,15 @@
 import * as z from 'zod'
 import { reactive, ref } from 'vue'
 import type { FormSubmitEvent } from '@bitrix24/b24ui-nuxt'
+import CheckLIcon from '@bitrix24/b24icons-vue/outline/CheckLIcon'
 
-// @todo add icons & colors & see template
+const toast = useToast()
 
 const fileRef = ref<HTMLInputElement>()
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Too short'),
-  email: z.string().email('Invalid email'),
+  email: z.email('Invalid email'),
   username: z.string().min(2, 'Too short'),
   avatar: z.string().optional(),
   bio: z.string().optional()
@@ -24,13 +25,13 @@ const profile = reactive<Partial<ProfileSchema>>({
   avatar: undefined,
   bio: undefined
 })
-const toast = useToast()
+
 async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
   toast.add({
     title: 'Success',
     description: 'Your settings have been updated.',
-    // icon: 'i-lucide-check',
-    color: 'success'
+    icon: CheckLIcon,
+    color: 'air-primary-success'
   })
   console.log(event.data)
 }
@@ -59,21 +60,22 @@ function onFileClick() {
   >
     <B24PageCard
       title="Profile"
-      description="These informations will be displayed publicly."
-      variant="naked"
+      description="This information will be published.."
+      variant="plain-no-accent"
       orientation="horizontal"
       class="mb-4"
+      :b24ui="{ container: 'p-0 sm:p-0' }"
     >
       <B24Button
         form="settings"
         label="Save changes"
-        color="neutral"
+        color="air-primary-success"
         type="submit"
         class="w-fit lg:ms-auto"
       />
     </B24PageCard>
 
-    <B24PageCard variant="subtle">
+    <B24PageCard variant="tinted-no-accent">
       <B24FormField
         name="name"
         label="Name"
