@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-
-// @todo add icons & colors & see template
+import { sleepAction } from '../../utils'
 
 withDefaults(defineProps<{
   count?: number
@@ -12,7 +11,7 @@ withDefaults(defineProps<{
 const open = ref(false)
 
 async function onSubmit() {
-  await new Promise(resolve => setTimeout(resolve, 1000))
+  await sleepAction(1000)
   open.value = false
 }
 </script>
@@ -26,15 +25,14 @@ async function onSubmit() {
     <slot />
 
     <template #body>
-      <div class="flex justify-end gap-2">
+      <div class="flex items-center justify-between gap-[10px] border-t border-t-1 border-t-(--ui-color-divider-default) pt-[18px]">
         <B24Button
           label="Cancel"
-          color="neutral"
           @click="open = false"
         />
         <B24Button
-          label="Delete"
-          color="error"
+          label="Yes"
+          color="air-primary-alert"
           loading-auto
           @click="onSubmit"
         />

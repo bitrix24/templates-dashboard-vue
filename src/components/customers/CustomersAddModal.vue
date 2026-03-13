@@ -1,13 +1,15 @@
 <script setup lang="ts">
+import type { FormSubmitEvent } from '@bitrix24/b24ui-nuxt'
 import { ref, reactive } from 'vue'
 import * as z from 'zod'
-import type { FormSubmitEvent } from '@bitrix24/b24ui-nuxt'
+import CheckLIcon from '@bitrix24/b24icons-vue/outline/CheckLIcon'
+import PlusLIcon from '@bitrix24/b24icons-vue/outline/PlusLIcon'
 
-// @todo add icons & colors & see template
+const toast = useToast()
 
 const schema = z.object({
   name: z.string().min(2, 'Too short'),
-  email: z.string().email('Invalid email')
+  email: z.email('Invalid email')
 })
 const open = ref(false)
 
@@ -18,16 +20,15 @@ const state = reactive<Partial<Schema>>({
   email: ''
 })
 
-const toast = useToast()
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  toast.add({ title: 'Success', description: `New customer ${event.data.name} added`, color: 'success' })
+  toast.add({ title: 'Success', description: `New customer ${event.data.name} added`, icon: CheckLIcon, color: 'air-primary-success' })
   open.value = false
 }
 </script>
 
 <template>
   <B24Modal v-model:open="open" title="New customer" description="Add a new customer to the database">
-    <B24Button label="New customer" ddd-icon="i-lucide-plus" />
+    <B24Button label="New customer" color="air-primary" :icon="PlusLIcon" />
 
     <template #body>
       <B24Form
@@ -36,21 +37,20 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         class="space-y-4"
         @submit="onSubmit"
       >
-        <B24FormField label="Name" placeholder="John Doe" name="name">
-          <B24Input v-model="state.name" class="w-full" />
+        <B24FormField label="Name" name="name">
+          <B24Input v-model="state.name" placeholder="John Doe" class="w-full" />
         </B24FormField>
-        <B24FormField label="Email" placeholder="john.doe@example.com" name="email">
-          <B24Input v-model="state.email" class="w-full" />
+        <B24FormField label="Email" name="email">
+          <B24Input v-model="state.email" placeholder="john.doe@example.com" class="w-full" />
         </B24FormField>
-        <div class="flex justify-end gap-2">
+        <div class="flex items-center justify-between gap-[10px] border-t border-t-1 border-t-(--ui-color-divider-default) pt-[18px]">
           <B24Button
             label="Cancel"
-            color="neutral"
             @click="open = false"
           />
           <B24Button
             label="Create"
-            color="primary"
+            color="air-primary"
             type="submit"
           />
         </div>
