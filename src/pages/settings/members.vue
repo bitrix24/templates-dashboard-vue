@@ -33,8 +33,9 @@ const filteredMembers = computed(() => {
     </B24PageCard>
 
     <B24PageCard
-      variant="tinted-no-accent"
+      variant="tinted-alt"
       :b24ui="{
+        root: 'bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-02)',
         container: 'p-0 sm:p-0 gap-y-0',
         wrapper: 'items-stretch',
         header: 'p-4 mb-0 border-b border-(--ui-color-divider-accent) dark:border-(--ui-color-divider-default)' }"

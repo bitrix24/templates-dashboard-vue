@@ -75,7 +75,10 @@ function onFileClick() {
       />
     </B24PageCard>
 
-    <B24PageCard variant="tinted-no-accent">
+    <B24PageCard
+      variant="tinted-alt"
+      :b24ui="{ root: 'bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-03)' }"
+    >
       <B24FormField
         name="name"
         label="Name"

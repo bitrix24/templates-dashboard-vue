@@ -47,8 +47,8 @@ const links = [
       <B24DashboardNavbar title="Settings" />
 
       <B24DashboardToolbar>
-        <!-- NOTE: The `-mx-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
-        <B24NavigationMenu :items="links" highlight class="-mx-1 flex-1" />
+        <!-- NOTE: The `-mx-1` class is used to align with the `B24DashboardNavbar` here. -->
+        <B24NavigationMenu :items="links" highlight class="-mx-2 flex-1" />
       </B24DashboardToolbar>
     </template>
 

@@ -87,7 +87,6 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
     <B24Button
       :icon="CalendarIcon"
       color="air-secondary-accent-1"
-      size="sm"
       class="hidden sm:flex group data-[state=open]:bg-(--ui-btn-background-hover)"
       :b24ui="{ label: 'flex-1' }"
       :disabled="isLoading"
@@ -128,7 +127,6 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
     :key="index"
     :label="range.label"
     :color="isRangeSelected(range) ? 'air-primary' : 'air-secondary-accent-1'"
-    size="sm"
     :disabled="isLoading"
     @click="selectRange(range)"
   />

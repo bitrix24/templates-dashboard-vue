@@ -98,7 +98,6 @@ await initPage()
             :icon="DatabaseIcon"
             label="Reload"
             color="air-secondary"
-            size="sm"
             loading-auto
             @click="loadDeals"
           />

@@ -17,7 +17,7 @@ const { statsData } = useDealStats()
       :to="stat.title === 'Clients' ? '/customers' : undefined"
       variant="tinted-alt"
       :b24ui="{
-        root: 'bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-03) backdrop-blur-md',
+        root: 'bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-02)',
         container: 'overflow-hidden gap-y-1.5',
         wrapper: 'items-start',
         leading: 'p-2.5 rounded-full bg-primary/10 ring ring-inset ring-primary/25',

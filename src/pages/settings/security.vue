@@ -28,7 +28,8 @@ const validate = (state: Partial<PasswordSchema>): FormError[] => {
   <B24PageCard
     title="Password"
     description="Confirm your current password before setting a new one."
-    variant="tinted"
+    variant="tinted-no-accent"
+    :b24ui="{ root: 'bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-02)' }"
     class="mb-4"
   >
     <B24Form

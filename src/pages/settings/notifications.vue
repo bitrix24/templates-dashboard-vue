@@ -66,8 +66,11 @@ async function onChange() {
     />
 
     <B24PageCard
-      variant="tinted-no-accent"
-      :b24ui="{ container: 'divide-y divide-(--ui-color-divider-accent) dark:divide-(--ui-color-divider-default)' }"
+      variant="tinted-alt"
+      :b24ui="{
+        root: 'bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-02)',
+        container: 'divide-y divide-(--ui-color-divider-accent) dark:divide-(--ui-color-divider-default)'
+      }"
     >
       <B24FormField
         v-for="field in section.fields"
