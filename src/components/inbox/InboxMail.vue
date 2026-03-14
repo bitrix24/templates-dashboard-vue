@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Mail } from '../../types'
+import type { DropdownMenuItem } from '@bitrix24/b24ui-nuxt'
 import { ref } from 'vue'
 import { format } from 'date-fns'
 import { sleepAction } from '../../utils'
@@ -23,7 +24,7 @@ const dropdownItems = [
   { type: 'separator' },
   { label: 'Star thread' },
   { label: 'Mute thread' }
-]
+] as DropdownMenuItem[]
 
 const toast = useToast()
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn } from '@bitrix24/b24ui-nuxt'
+import type { Column } from '@tanstack/vue-table'
 import type { User } from '../types'
 import { useTemplateRef, h, ref, computed, watch, resolveComponent } from 'vue'
 import { upperFirst } from 'scule'
@@ -83,7 +84,7 @@ function getRowItems(row: Row<User>) {
   ]
 }
 
-function getHeader(column: Column<Payment>, label: string) {
+function getHeader(column: Column<User>, label: string) {
   const isSorted = column.getIsSorted()
 
   return h(
@@ -250,33 +251,32 @@ const pagination = ref({
 <template>
   <B24DashboardPanel id="customers" :b24ui="{ body: 'pt-0 sm:p-4' }">
     <template #header>
-      <B24DashboardNavbar title="Customers">
-        <template #trailing>
-          <div class="ml-4 flex flex-wrap items-center justify-start gap-1.5">
-            <CustomersAddModal />
+      <B24DashboardNavbar title="Customers" />
+      <B24DashboardToolbar class="scrollbar-thin" :b24ui="{ root: 'sm:px-4' }">
+        <template #left>
+          <CustomersAddModal />
 
-            <B24Select
-              v-model="statusFilter"
-              :items="[
-                { label: 'All', value: 'all' },
-                { label: 'Subscribed', value: 'subscribed' },
-                { label: 'Unsubscribed', value: 'unsubscribed' },
-                { label: 'Bounced', value: 'bounced' }
-              ]"
-              :b24ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
-              placeholder="Filter status"
-              class="min-w-[150px]"
-            />
+          <B24Select
+            v-model="statusFilter"
+            :items="[
+              { label: 'All', value: 'all' },
+              { label: 'Subscribed', value: 'subscribed' },
+              { label: 'Unsubscribed', value: 'unsubscribed' },
+              { label: 'Bounced', value: 'bounced' }
+            ]"
+            :b24ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
+            placeholder="Filter status"
+            class="min-w-[150px]"
+          />
 
-            <B24Input
-              v-model="email"
-              class="max-w-[384px]"
-              :icon="SearchIcon"
-              placeholder="Filter emails..."
-            />
-          </div>
+          <B24Input
+            v-model="email"
+            class="max-w-[384px]"
+            :icon="SearchIcon"
+            placeholder="Filter emails..."
+          />
         </template>
-      </B24DashboardNavbar>
+      </B24DashboardToolbar>
     </template>
 
     <template #body>
@@ -290,7 +290,7 @@ const pagination = ref({
           v-model:pagination="pagination"
           :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
           sticky
-          class="shrink-0 h-[calc(100dvh-50px-70px-47px-12px)] sm:h-[calc(100dvh-50px-61px-67px-32px)]"
+          class="shrink-0 h-[calc(100dvh-50px-49px-70px-47px-12px)] sm:h-[calc(100dvh-50px-49px-61px-67px-32px)]"
           :data="data ?? []"
           :columns="columns"
           :loading="isFetching"
@@ -303,10 +303,10 @@ const pagination = ref({
             separator: 'h-0'
           }"
         >
-          <template #actions-header="{ table }">
+          <template #actions-header="{ table: tableInSlot }">
             <B24DropdownMenu
               :items="
-                table
+                tableInSlot
                   ?.getAllColumns()
                   .filter((column: any) => column.getCanHide())
                   .map((column: any) => ({
@@ -314,7 +314,7 @@ const pagination = ref({
                     type: 'checkbox' as const,
                     checked: column.getIsVisible(),
                     onUpdateChecked(checked: boolean) {
-                      table?.getColumn(column.id)?.toggleVisibility(!!checked)
+                      tableInSlot?.getColumn(column.id)?.toggleVisibility(!!checked)
                     },
                     onSelect(e?: Event) {
                       e?.preventDefault()
@@ -351,13 +351,13 @@ const pagination = ref({
             />
           </div>
 
-          <div class="md:w-1/6 lex"></div>
+          <div class="md:w-1/6 flex" />
         </div>
 
         <div class="py-1.5 sm:py-3 flex flex-col md:flex-row gap-1.5 sm:gap-3 items-center justify-between border-t border-(--ui-color-divider-default)">
           <CustomersDeleteModal :count="table?.tableApi?.getFilteredSelectedRowModel().rows.length">
             <B24Button
-              :disabled="table?.tableApi?.getFilteredSelectedRowModel().rows.length < 1"
+              :disabled="(table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0) < 1"
               label="Delete"
               :icon="CrossLIcon"
               :normal-case="false"
