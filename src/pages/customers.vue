@@ -10,7 +10,6 @@ import ContactDetailsIcon from '@bitrix24/b24icons-vue/outline/ContactDetailsIco
 import WalletIcon from '@bitrix24/b24icons-vue/outline/WalletIcon'
 import TrashcanIcon from '@bitrix24/b24icons-vue/outline/TrashcanIcon'
 import MenuIcon from '@bitrix24/b24icons-vue/main/MenuIcon'
-import SortIcon from '@bitrix24/b24icons-vue/actions/SortIcon'
 import ChevronTopLIcon from '@bitrix24/b24icons-vue/outline/ChevronTopLIcon'
 import ChevronDownLIcon from '@bitrix24/b24icons-vue/outline/ChevronDownLIcon'
 import SettingIcon from '@bitrix24/b24icons-vue/button/SettingIcon'
@@ -84,6 +83,32 @@ function getRowItems(row: Row<User>) {
   ]
 }
 
+function getHeader(column: Column<Payment>, label: string) {
+  const isSorted = column.getIsSorted()
+
+  return h(
+    B24Button,
+    {
+      color: 'air-tertiary-no-accent',
+      label,
+      size: 'sm',
+      class: 'group -mx-2.5 [--ui-btn-height:20px]',
+      'aria-label': `Sort by ${isSorted === 'asc' ? 'descending' : 'ascending'}`,
+      onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
+    },
+    {
+      trailing: () => isSorted
+        ? h((isSorted === 'asc' ? ChevronTopLIcon : ChevronDownLIcon), {
+          class: {
+            'text-(--ui-btn-color) shrink-0 size-(--ui-btn-icon-size)': true,
+            'hidden group-hover:inline-flex': !isSorted
+          }
+        })
+        : undefined
+    }
+  )
+}
+
 const columns: TableColumn<User>[] = [
   {
     id: 'select',
@@ -145,11 +170,11 @@ const columns: TableColumn<User>[] = [
   },
   {
     accessorKey: 'id',
-    header: 'ID'
+    header: ({ column }) => getHeader(column, 'ID')
   },
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: ({ column }) => getHeader(column, 'Name'),
     cell: ({ row }) => {
       return h('div', { class: 'flex items-center gap-3' }, [
         h(B24Avatar, {
@@ -165,20 +190,7 @@ const columns: TableColumn<User>[] = [
   },
   {
     accessorKey: 'email',
-    header: ({ column }) => {
-      const isSorted = column.getIsSorted()
-      return h(B24Button, {
-        color: 'air-tertiary-no-accent',
-        label: 'Email',
-        size: 'sm',
-        class: '-mx-2.5 [--ui-btn-height:20px]',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      }, {
-        trailing: () => h(isSorted ? (isSorted === 'asc' ? ChevronTopLIcon : ChevronDownLIcon) : SortIcon, {
-          class: 'text-(--ui-btn-color) shrink-0 size-(--ui-btn-icon-size)'
-        })
-      })
-    }
+    header: ({ column }) => getHeader(column, 'Email'),
   },
   {
     accessorKey: 'status',
@@ -197,6 +209,13 @@ const columns: TableColumn<User>[] = [
     }
   }
 ]
+
+const sorting = ref([
+  {
+    id: 'id',
+    desc: false
+  }
+])
 
 const statusFilter = ref('all')
 
@@ -229,7 +248,7 @@ const pagination = ref({
 </script>
 
 <template>
-  <B24DashboardPanel id="customers" :b24ui="{ body: 'p-4' }">
+  <B24DashboardPanel id="customers" :b24ui="{ body: 'pt-0 sm:p-4' }">
     <template #header>
       <B24DashboardNavbar title="Customers">
         <template #trailing>
@@ -261,16 +280,17 @@ const pagination = ref({
     </template>
 
     <template #body>
-      <div class="relative rounded-lg border border-(--ui-color-divider-default) overflow-hidden">
+      <div class="relative sm:rounded-lg sm:border border-(--ui-color-divider-default) overflow-hidden">
         <B24Table
           ref="table"
+          v-model:sorting="sorting"
           v-model:column-filters="columnFilters"
           v-model:column-visibility="columnVisibility"
           v-model:row-selection="rowSelection"
           v-model:pagination="pagination"
           :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
           sticky
-          class="shrink-0 h-[calc(100dvh-50px-106px-67px-32px)] sm:h-[calc(100dvh-50px-61px-67px-32px)]"
+          class="shrink-0 h-[calc(100dvh-50px-70px-47px-12px)] sm:h-[calc(100dvh-50px-61px-67px-32px)]"
           :data="data ?? []"
           :columns="columns"
           :loading="isFetching"
@@ -309,18 +329,21 @@ const pagination = ref({
           </template>
         </B24Table>
 
-        <div class="flex flex-col md:flex-row gap-3 items-center justify-start border-t border-(--ui-color-divider-default) py-4">
-          <div class="md:w-1/6 text-xs text-muted uppercase ml-3">
-            Selected: <ProseStrong class="text-label">
-              {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} /
-              {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }}
-            </ProseStrong>
+        <div class="py-1.5 sm:py-3 flex flex-col md:flex-row gap-1.5 sm:gap-3 items-center justify-start border-t border-(--ui-color-divider-default)">
+          <div class="md:w-1/6">
+            <div class="sm:ml-3 text-xs text-muted uppercase">
+              Selected: <ProseStrong class="text-label">
+                {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} /
+                {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }}
+              </ProseStrong>
+            </div>
           </div>
 
           <div class="flex-1 flex">
             <B24Pagination
               class="mx-auto"
               size="sm"
+              active-color="air-selection"
               :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
               :items-per-page="table?.tableApi?.getState().pagination.pageSize"
               :total="table?.tableApi?.getFilteredRowModel().rows.length"
@@ -331,7 +354,7 @@ const pagination = ref({
           <div class="md:w-1/6 lex"></div>
         </div>
 
-        <div class="flex items-center justify-between gap-3 border-t border-(--ui-color-divider-default) py-4">
+        <div class="py-1.5 sm:py-3 flex flex-col md:flex-row gap-1.5 sm:gap-3 items-center justify-between border-t border-(--ui-color-divider-default)">
           <CustomersDeleteModal :count="table?.tableApi?.getFilteredSelectedRowModel().rows.length">
             <B24Button
               :disabled="table?.tableApi?.getFilteredSelectedRowModel().rows.length < 1"
@@ -339,6 +362,7 @@ const pagination = ref({
               :icon="CrossLIcon"
               :normal-case="false"
               color="air-tertiary-no-accent"
+              class="sm:ml-1"
             />
           </CustomersDeleteModal>
         </div>

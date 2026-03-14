@@ -14,7 +14,7 @@ const { statsData } = useDealStats()
       :key="index"
       :icon="stat.icon"
       :title="stat.title"
-      :to="stat.title === 'Clients' ? '/customers' : undefined"
+      :to="stat.title === 'Customers' ? '/customers' : undefined"
       variant="tinted-alt"
       :b24ui="{
         root: 'bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-02)',

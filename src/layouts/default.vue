@@ -215,7 +215,7 @@ onMounted(() => {
       </template>
 
       <template #footer="{ collapsed }">
-        <UserMenu :collapsed="collapsed" />
+        <UserMenu class="mb-2" :collapsed="collapsed" />
       </template>
     </B24DashboardSidebar>
 

@@ -101,7 +101,7 @@ export async function fetchDealsInRange(
   try {
     for await (const chunk of generator) {
       chunk.forEach((row) => {
-        // Unique clients
+        // Unique Customers
         if (row.contactId > 0) {
           uniqueCustomers.add(`contact_${row.contactId}`)
         } else if (row.companyId > 0) {
