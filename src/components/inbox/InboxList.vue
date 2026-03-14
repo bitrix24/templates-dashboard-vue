@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { Mail } from '../../types'
 import { ref, watch } from 'vue'
 import { format, isToday } from 'date-fns'
-import type { Mail } from '../../types'
 
 const props = defineProps<{
   mails: Mail[]
@@ -55,8 +55,8 @@ defineShortcuts({
         :class="[
           mail.unread ? 'text-highlighted' : 'text-toned',
           selectedMail && selectedMail.id === mail.id
-            ? 'border-primary bg-primary/10'
-            : 'border-bg hover:border-primary hover:bg-primary/5'
+            ? 'border-(--ui-color-design-selection-stroke) bg-(--ui-color-design-selection-bg)'
+            : 'border-(--ui-color-divider-accent) hover:border-(--ui-color-design-selection-stroke) hover:bg-(--ui-color-design-selection-bg)'
         ]"
         @click="selectedMail = mail"
       >
@@ -69,12 +69,12 @@ defineShortcuts({
 
           <span>{{ isToday(new Date(mail.date)) ? format(new Date(mail.date), 'HH:mm') : format(new Date(mail.date), 'dd MMM') }}</span>
         </div>
-        <p class="truncate" :class="[mail.unread && 'font-semibold']">
+        <ProseP accent="more" class="truncate" :class="[mail.unread && 'font-semibold']">
           {{ mail.subject }}
-        </p>
-        <p class="text-dimmed line-clamp-1">
+        </ProseP>
+        <ProseP accent="less" class="line-clamp-1">
           {{ mail.body }}
-        </p>
+        </ProseP>
       </div>
     </div>
   </div>

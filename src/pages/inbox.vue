@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { Mail } from '../types'
 import { computed, ref, watch } from 'vue'
 import { useFetch, useBreakpoints, breakpointsTailwind } from '@vueuse/core'
-import type { Mail } from '../types'
+import MailOpenIcon from '@bitrix24/b24icons-vue/outline/MailOpenIcon'
 
 const tabItems = [{
   label: 'All',
@@ -57,7 +58,7 @@ const isMobile = breakpoints.smaller('lg')
   >
     <B24DashboardNavbar title="Inbox">
       <template #trailing>
-        <B24Badge :label="filteredMails.length" variant="subtle" />
+        <B24Badge :label="filteredMails.length" color="air-secondary" />
       </template>
 
       <template #right>
@@ -75,7 +76,7 @@ const isMobile = breakpoints.smaller('lg')
 
   <InboxMail v-if="selectedMail" :mail="selectedMail" @close="selectedMail = null" />
   <div v-else class="hidden lg:flex flex-1 items-center justify-center">
-    <div name="i-lucide-inbox" class="size-32 text-dimmed" />
+    <MailOpenIcon class="size-32 text-dimmed" />
   </div>
 
   <B24Drawer v-if="isMobile" v-model:open="isMailPanelOpen">

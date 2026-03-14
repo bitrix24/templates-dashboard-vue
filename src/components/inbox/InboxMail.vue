@@ -1,9 +1,15 @@
 <script setup lang="ts">
+import type { Mail } from '../../types'
 import { ref } from 'vue'
 import { format } from 'date-fns'
-import type { Mail } from '../../types'
-
-// @todo add icons & colors & see template
+import { sleepAction } from '../../utils'
+import CircleCheckIcon from '@bitrix24/b24icons-vue/outline/CircleCheckIcon'
+import CrossLIcon from '@bitrix24/b24icons-vue/outline/CrossLIcon'
+import MoveToIcon from '@bitrix24/b24icons-vue/outline/MoveToIcon'
+import ReplyIcon from '@bitrix24/b24icons-vue/outline/ReplyIcon'
+import MoreVerticalLIcon from '@bitrix24/b24icons-vue/outline/MoreVerticalLIcon'
+import AttachIcon from '@bitrix24/b24icons-vue/outline/AttachIcon'
+import SendIcon from '@bitrix24/b24icons-vue/outline/SendIcon'
 
 defineProps<{
   mail: Mail
@@ -12,26 +18,11 @@ defineProps<{
 const emits = defineEmits(['close'])
 
 const dropdownItems = [
-  [
-    {
-      label: 'Mark as unread',
-      // icon: 'i-lucide-check-circle'
-    },
-    {
-      label: 'Mark as important',
-      // icon: 'i-lucide-triangle-alert'
-    }
-  ],
-  [
-    {
-      label: 'Star thread',
-      // icon: 'i-lucide-star'
-    },
-    {
-      label: 'Mute thread',
-      // icon: 'i-lucide-circle-pause'
-    }
-  ]
+  { label: 'Mark as unread' },
+  { label: 'Mark as important' },
+  { type: 'separator' },
+  { label: 'Star thread' },
+  { label: 'Mute thread' }
 ]
 
 const toast = useToast()
@@ -39,21 +30,19 @@ const toast = useToast()
 const reply = ref('')
 const loading = ref(false)
 
-function onSubmit() {
+async function onSubmit() {
   loading.value = true
 
-  setTimeout(() => {
-    reply.value = ''
+  await sleepAction(5000)
+  toast.add({
+    title: 'Email sent',
+    description: 'Your email has been sent successfully',
+    icon: CircleCheckIcon,
+    color: 'air-primary-success'
+  })
 
-    toast.add({
-      title: 'Email sent',
-      description: 'Your email has been sent successfully',
-      // icon: 'i-lucide-check-circle',
-      color: 'success'
-    })
-
-    loading.value = false
-  }, 1000)
+  reply.value = ''
+  loading.value = false
 }
 </script>
 
@@ -62,9 +51,8 @@ function onSubmit() {
     <B24DashboardNavbar :title="mail.subject" :toggle="false">
       <template #leading>
         <B24Button
-          ddd-icon="i-lucide-x"
-          color="neutral"
-          variant="ghost"
+          :icon="CrossLIcon"
+          color="air-tertiary-no-accent"
           class="-ms-1.5"
           @click="emits('close')"
         />
@@ -73,20 +61,22 @@ function onSubmit() {
       <template #right>
         <B24Tooltip text="Archive">
           <B24Button
-            ddd-icon="i-lucide-inbox"
-            color="neutral"
-            variant="ghost"
+            :icon="MoveToIcon"
+            color="air-tertiary-no-accent"
           />
         </B24Tooltip>
 
         <B24Tooltip text="Reply">
-          <B24Button ddd-icon="i-lucide-reply" color="neutral" variant="ghost" />
+          <B24Button
+            :icon="ReplyIcon"
+            color="air-tertiary-no-accent"
+          />
         </B24Tooltip>
 
         <B24DropdownMenu :items="dropdownItems">
           <B24Button
-            ddd-icon="i-lucide-ellipsis-vertical"
-            color="neutral"
+            :icon="MoreVerticalLIcon"
+            color="air-tertiary-no-accent"
           />
         </B24DropdownMenu>
       </template>
@@ -122,9 +112,17 @@ function onSubmit() {
     </div>
 
     <div class="pb-4 px-4 sm:px-6 shrink-0">
-      <B24Card variant="subtle" class="mt-auto" :b24ui="{ header: 'flex items-center gap-1.5 text-dimmed' }">
+      <!-- @todo: after UI update fix :b24ui -->
+      <B24Card
+        variant="tinted-no-accent"
+        class="mt-auto"
+        :b24ui="{
+          root: 'bg-(--ui-color-bg-content-primary) light:bg-(--ui-color-gray-02)',
+          header: 'flex items-center gap-1.5'
+        }"
+      >
         <template #header>
-          <div name="i-lucide-reply" class="size-5" />
+          <ReplyIcon class="size-5" />
 
           <span class="text-sm truncate">
             Reply to {{ mail.from.name }} ({{ mail.from.email }})
@@ -149,24 +147,24 @@ function onSubmit() {
           <div class="flex items-center justify-between">
             <B24Tooltip text="Attach file">
               <B24Button
-                color="neutral"
-                variant="ghost"
-                dd-icon="i-lucide-paperclip"
+                color="air-tertiary-no-accent"
+                :disabled="loading"
+                :icon="AttachIcon"
               />
             </B24Tooltip>
 
             <div class="flex items-center justify-end gap-2">
               <B24Button
-                color="neutral"
-                variant="ghost"
+                color="air-tertiary-no-accent"
+                :disabled="loading"
                 label="Save draft"
               />
               <B24Button
                 type="submit"
-                color="neutral"
+                color="air-primary"
                 :loading="loading"
                 label="Send"
-                dd-icon="i-lucide-send"
+                :icon="SendIcon"
               />
             </div>
           </div>

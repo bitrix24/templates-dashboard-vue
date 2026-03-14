@@ -65,6 +65,7 @@ async function onChange() {
       :b24ui="{ container: 'p-0 sm:p-0' }"
     />
 
+    <!-- @todo: after UI update fix :b24ui -->
     <B24PageCard
       variant="tinted-alt"
       :b24ui="{
