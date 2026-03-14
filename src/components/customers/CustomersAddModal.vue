@@ -43,9 +43,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         <B24FormField label="Email" name="email">
           <B24Input v-model="state.email" placeholder="john.doe@example.com" class="w-full" />
         </B24FormField>
-        <div class="flex items-center justify-between gap-[10px] border-t border-t-1 border-t-(--ui-color-divider-default) pt-[18px]">
+        <div class="mt-8 mb-0.5 flex items-center justify-between gap-[10px] border-t border-t-1 border-t-(--ui-color-divider-default) pt-[18px]">
           <B24Button
             label="Cancel"
+            color="air-tertiary-no-accent"
             @click="open = false"
           />
           <B24Button

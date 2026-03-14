@@ -25,9 +25,10 @@ async function onSubmit() {
     <slot />
 
     <template #body>
-      <div class="flex items-center justify-between gap-[10px] border-t border-t-1 border-t-(--ui-color-divider-default) pt-[18px]">
+      <div class="mb-0.5 flex items-center justify-between gap-[10px] border-t border-t-1 border-t-(--ui-color-divider-default) pt-[18px]">
         <B24Button
           label="Cancel"
+          color="air-tertiary-no-accent"
           @click="open = false"
         />
         <B24Button
