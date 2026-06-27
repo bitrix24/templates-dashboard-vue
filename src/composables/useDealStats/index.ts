@@ -1,5 +1,4 @@
 import type { DataRecord, Period, Range, Sale, Stat } from '../../types'
-import type { B24Frame } from '@bitrix24/b24jssdk'
 import type { PartialStats } from './api'
 import { ref, shallowRef, computed, watch } from 'vue'
 import { createSharedComposable } from '@vueuse/core'
@@ -50,7 +49,6 @@ const _useDealStats = () => {
   // -----------------------------------------------------------------------
   const b24Instance = useB24()
   const $logger = b24Instance.buildLogger('useDealStats')
-  const $b24 = b24Instance.get() as B24Frame
   const isUseB24 = computed<boolean>(() => b24Instance.isInit())
 
   // ------------------------------------------------------------------------
@@ -162,6 +160,7 @@ const _useDealStats = () => {
    * Retrieves deals for the current and previous periods, creates a chart and lists the latest deals.
    */
   async function processCrmData(): Promise<void> {
+    const $b24 = b24Instance.getFrame()
     const dates = getDatesByPeriod(range.value, period.value)
     const previousStart = sub(range.value.start, { years: 1 })
     const previousEnd = sub(range.value.end, { years: 1 })
@@ -281,7 +280,7 @@ const _useDealStats = () => {
    */
   async function openDealHandler(row: Sale) {
     if (!isUseB24.value || !row.editPath) return
-    return openDeal($b24, row.editPath)
+    return openDeal(b24Instance.getFrame(), row.editPath)
   }
 
   // ------------------------------------------------------------------------

@@ -69,8 +69,31 @@ pnpm preview
 ```
 
 > [!NOTE]
-> The idea is that this template can be used as a full-fledged Bitrix24 application. And without connecting to Bitrix24, it can display test data.
-> As soon as we do this, we'll add instructions here.
+> This template works both ways:
+> - **Standalone** — opened outside Bitrix24 it renders generated test data, so you can develop the UI without a portal.
+> - **As a Bitrix24 app** — embedded in a portal it talks to the REST API via [@bitrix24/b24jssdk](https://bitrix24.github.io/b24jssdk/). See [As B24 App](#as-b24-app) below.
+
+## Project Structure
+
+```
+src/
+├── App.vue              # Root component: B24 init, locale, global toaster
+├── main.ts              # App bootstrap (router, i18n, unhead)
+├── i18n.ts              # vue-i18n setup and locale loading
+├── assets/              # Global CSS and background images
+├── components/          # UI components (home, customers, inbox, settings, icons, ...)
+├── composables/
+│   ├── useB24.ts        # Bitrix24 frame lifecycle (init / get / getFrame / helper)
+│   ├── useDashboard.ts  # Shared dashboard state & keyboard shortcuts
+│   └── useDealStats/    # CRM deal statistics: api, helpers, formatters, mocks
+├── layouts/             # Page layouts (default, clear)
+├── locales/             # i18n messages (19 locales)
+├── pages/               # File-based routes; settings/ holds nested settings pages
+├── types/               # Shared TypeScript types
+├── utils/               # Small helpers
+└── route-map.d.ts       # Auto-generated route types (do not edit)
+scripts/                 # check.sh / check.ps1 — full local verification
+```
 
 # As B24 App
 

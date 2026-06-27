@@ -23,6 +23,24 @@ export const useB24 = () => {
     return $b24
   }
 
+  /**
+   * Returns the initialized B24Frame or throws if it is not ready yet.
+   *
+   * Use this instead of `get() as B24Frame` at call sites: it avoids capturing
+   * an `undefined` frame during setup (before `init()` resolves) and fails loudly
+   * with a clear error rather than a cryptic property access on `undefined`.
+   */
+  function getFrame(): B24Frame {
+    if (!($b24 instanceof B24Frame)) {
+      throw new SdkError({
+        code: 'B24_NOT_INITIALIZED',
+        description: 'Bitrix24 frame is not initialized yet',
+        status: 500
+      })
+    }
+    return $b24
+  }
+
   function getHelper(): B24HelperData | undefined {
     return $b24Helper
   }
@@ -132,6 +150,7 @@ export const useB24 = () => {
     buildLogger,
     init,
     get,
+    getFrame,
     getHelper,
     set,
     isFrame,

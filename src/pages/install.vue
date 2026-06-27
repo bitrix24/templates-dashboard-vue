@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { IStep } from '../types'
 import type { ProgressProps } from '@bitrix24/b24ui-nuxt'
-import type { B24Frame } from '@bitrix24/b24jssdk'
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -21,7 +20,6 @@ const confetti = useConfetti()
 const b24Instance = useB24()
 const $logger = b24Instance.buildLogger('install')
 
-const $b24 = b24Instance.get() as B24Frame
 const isUseB24 = computed<boolean>(() => {
   return b24Instance.isInit()
 })
@@ -44,7 +42,8 @@ const steps = ref<Record<string, IStep>>({
   serverSide: {
     caption: t('page.install.step.serverSide.caption'),
     action: async () => {
-      const authData = $b24.auth.getAuthData()
+      if (!isUseB24.value) return
+      const authData = b24Instance.getFrame().auth.getAuthData()
 
       if (authData === false) {
         throw new Error('Some problem with auth. See App logic')
@@ -67,6 +66,7 @@ async function makeInit(): Promise<void> {
     return
   }
 
+  const $b24 = b24Instance.getFrame()
   $b24.parent.setTitle(t('page.install.seo.title'))
 
   if (steps.value.init) {
@@ -124,7 +124,7 @@ async function makeFinish(): Promise<void> {
   confetti.fire()
   await sleepAction(3000)
 
-  await $b24.installFinish()
+  await b24Instance.getFrame().installFinish()
 }
 
 const stepsData = computed(() => {
@@ -168,7 +168,7 @@ onMounted(async () => {
       // endregion ////
     }
 
-    await $b24.parent.setTitle(t('page.install.seo.title'))
+    await b24Instance.getFrame().parent.setTitle(t('page.install.seo.title'))
 
     for (const [key, step] of Object.entries(steps.value)) {
       stepCode.value = key

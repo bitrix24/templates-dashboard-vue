@@ -24,10 +24,18 @@ export default defineConfig(({ mode }) => {
         colorModeStorageKey: 'bitrix24-ui-template-dashboard-vue'
       }),
       {
-        name: 'global-post-to-get-rewriter',
+        // Bitrix24 embeds the app/install pages by POSTing to the page URL.
+        // The dev server only serves the SPA over GET, so rewrite POST -> GET,
+        // but ONLY for top-level HTML document navigations — never for API/XHR
+        // or asset POSTs, so real POST payloads are not silently turned into GETs.
+        name: 'b24-document-post-to-get-rewriter',
         configureServer(server) {
           server.middlewares.use((req, _res, next) => {
-            if (req.method === 'POST') {
+            const accept = Array.isArray(req.headers.accept)
+              ? req.headers.accept.join(',')
+              : (req.headers.accept ?? '')
+            const isDocumentNavigation = accept.includes('text/html')
+            if (req.method === 'POST' && isDocumentNavigation) {
               req.method = 'GET'
             }
             next()
