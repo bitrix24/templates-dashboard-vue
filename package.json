@@ -9,8 +9,7 @@
     "lint": "eslint src",
     "typecheck": "vue-tsc -p ./tsconfig.app.json",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "translate-ui": "tsx tools/translate.ui.ts"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@bitrix24/b24icons-vue": "^2.0.7",
@@ -34,12 +33,9 @@
   "devDependencies": {
     "@types/node": "^25.6.0",
     "@vitejs/plugin-vue": "^6.0.7",
-    "dotenv": "^17.4.2",
     "eslint": "^10.6.0",
     "eslint-plugin-vue": "^10.9.2",
     "jsdom": "^29.1.1",
-    "openai": "^6.45.0",
-    "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.0",
     "vite": "^7.3.5",

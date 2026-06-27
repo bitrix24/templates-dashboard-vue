@@ -103,12 +103,3 @@ When registering the application in the Bitrix24 Partner Portal or as a local ap
 
 UI strings live in `src/locales/*.json` (19 locales), wired up through `vue-i18n` in `src/i18n.ts`.
 To add a language, create a new `<lang>.json` next to the existing ones and register it in `src/i18n.ts`.
-
-# Translate
-
-Auto-translate the locale files with the DeepSeek API. Set `DEEPSEEK_API_KEY` in your `.env`
-(see `.env.example`) first — this is a dev-only tool and the key is never bundled into the app.
-
-```bash
-pnpm run translate-ui
-```
