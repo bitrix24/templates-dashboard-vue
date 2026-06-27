@@ -11,9 +11,11 @@ const { currencyListData, chartData, formatDateByPeriod, formatCurrency } = useD
 const { width } = useElementSize(cardRef)
 
 const x = (_: DataRecord, i: number) => i
-const y = currencyListData.value.map((currency) => {
+// Keep accessors reactive: `currencyListData` changes when the period switches,
+// so deriving `y` once on setup would freeze the chart to the initial currencies.
+const y = computed(() => currencyListData.value.map((currency) => {
   return (d: DataRecord) => d.amount[currency] ?? 0.0
-})
+}))
 
 const template = (d: DataRecord) => {
   const dateStr = formatDateByPeriod(d.date)

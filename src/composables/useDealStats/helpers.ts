@@ -142,7 +142,8 @@ export function buildChartData(sales: Sale[], dates: Date[]): DataRecord[] {
  * const latest = getLatestSales(allSales, 10)
  */
 export function getLatestSales(sales: Sale[], limit: number = 5): Sale[] {
-  return sales
+  // Copy before sorting: `sales` is shared with buildChartData() and must not be mutated.
+  return [...sales]
     .sort((a, b) => new Date(b.closedate!).getTime() - new Date(a.closedate!).getTime())
     .slice(-1 * limit)
 }

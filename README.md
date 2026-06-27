@@ -18,12 +18,24 @@ git clone https://github.com/bitrix24/templates-dashboard-vue.git <project-name>
 cd <project-name>
 ```
 
+## Prerequisites
+
+- **Node.js** `>= 22`
+- **pnpm** `>= 10` (the repo pins `pnpm@10.33.0` via the `packageManager` field; run `corepack enable` to pick it up automatically)
+
 ## Setup
 
 Make sure to install the dependencies:
 
 ```bash
 pnpm install
+```
+
+Quality checks:
+
+```bash
+pnpm lint        # ESLint
+pnpm typecheck   # vue-tsc
 ```
 
 ## Development Server
@@ -79,8 +91,16 @@ When registering the application in the Bitrix24 Partner Portal or as a local ap
 4. Fill in the URLs provided above and check the required **Scopes**.
 5. Click **Save** and open the app.
 
+# Localization
+
+UI strings live in `src/locales/*.json` (19 locales), wired up through `vue-i18n` in `src/i18n.ts`.
+To add a language, create a new `<lang>.json` next to the existing ones and register it in `src/i18n.ts`.
+
 # Translate
 
-```
+Auto-translate the locale files with the DeepSeek API. Set `DEEPSEEK_API_KEY` in your `.env`
+(see `.env.example`) first — this is a dev-only tool and the key is never bundled into the app.
+
+```bash
 pnpm run translate-ui
 ```

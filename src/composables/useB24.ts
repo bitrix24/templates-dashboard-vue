@@ -89,8 +89,13 @@ export const useB24 = () => {
 
       $b24Helper = getB24Helper()
       return set(b24)
-    } catch {
-      // set(undefined)
+    } catch (error) {
+      // `JSSDK_CLIENT_SIDE_WARNING` is the expected case when the app is opened
+      // outside the Bitrix24 frame (the install page guides the user from here).
+      // Anything else is a real failure and must not be swallowed silently.
+      if (!(error instanceof SdkError && error.code === 'JSSDK_CLIENT_SIDE_WARNING')) {
+        buildLogger('useB24.init').error(error instanceof Error ? error.message : String(error))
+      }
     }
 
     return new Result()
