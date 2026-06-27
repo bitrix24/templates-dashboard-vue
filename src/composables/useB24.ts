@@ -2,15 +2,17 @@ import type { B24FrameQueryParams, LoggerInterface } from '@bitrix24/b24jssdk'
 import { ref, nextTick } from 'vue'
 import { B24Frame, LoggerFactory, Result, SdkError, initializeB24Frame, useB24Helper, LoadDataType } from '@bitrix24/b24jssdk'
 
+// Helper instance type derived from the SDK (B24HelperManager is not exported directly).
+type B24HelperData = ReturnType<ReturnType<typeof useB24Helper>['getB24Helper']>
+
 let $b24: undefined | B24Frame = undefined
-let $b24Helper: undefined | object = undefined
+let $b24Helper: undefined | B24HelperData = undefined
 const type = ref<'undefined' | 'B24Frame'>('undefined')
 
 export const useB24 = () => {
   const b24Config = {}
 
   const { initB24Helper, getB24Helper } = useB24Helper()
-  type B24HelperData = ReturnType<typeof getB24Helper>
 
   function buildLogger(loggerTitle?: string): LoggerInterface {
     const devMode = typeof import.meta !== 'undefined' && import.meta.env?.DEV
@@ -22,7 +24,7 @@ export const useB24 = () => {
   }
 
   function getHelper(): B24HelperData | undefined {
-    return $b24Helper as B24HelperData | undefined
+    return $b24Helper
   }
 
   function set(newValue: unknown | B24Frame | string): Result {

@@ -36,6 +36,14 @@ Quality checks:
 ```bash
 pnpm lint        # ESLint
 pnpm typecheck   # vue-tsc
+pnpm test        # Vitest unit tests
+```
+
+Run the full gate (install + lint + test + typecheck + build) with one command:
+
+```bash
+bash scripts/check.sh                                   # Linux / macOS
+powershell -ExecutionPolicy Bypass -File scripts/check.ps1   # Windows
 ```
 
 ## Development Server

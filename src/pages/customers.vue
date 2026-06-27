@@ -36,7 +36,7 @@ const columnFilters = ref([{
   value: ''
 }])
 const columnVisibility = ref()
-const rowSelection = ref({ 3: true })
+const rowSelection = ref({})
 
 const { data, isFetching } = useFetch('https://bitrix24.github.io/templates-dashboard/api/customers', { initialData: [] }).json<User[]>()
 

@@ -12,7 +12,7 @@
  */
 export function stripTags(html: string) {
   const doc = new DOMParser().parseFromString(html, 'text/html')
-  return doc.body.textContent.replace(/\u00a0/g, ' ').trim()
+  return (doc.body.textContent ?? '').replace(/\u00a0/g, ' ').trim()
 }
 
 /**

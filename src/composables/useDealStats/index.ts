@@ -1,7 +1,7 @@
 import type { DataRecord, Period, Range, Sale, Stat } from '../../types'
 import type { B24Frame } from '@bitrix24/b24jssdk'
 import type { PartialStats } from './api'
-import { ref, shallowRef, computed, watch, nextTick } from 'vue'
+import { ref, shallowRef, computed, watch } from 'vue'
 import { createSharedComposable } from '@vueuse/core'
 import { eachDayOfInterval, sub } from 'date-fns'
 import { SdkError } from '@bitrix24/b24jssdk'
@@ -325,9 +325,7 @@ const _useDealStats = () => {
   watch(
     [period, range],
     async () => {
-      nextTick(async () => {
-        await loadDeals()
-      })
+      await loadDeals()
     },
     { immediate: true }
   )
