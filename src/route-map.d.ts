@@ -14,11 +14,15 @@ import type {
   ParamValueZeroOrMore,
   ParamValueZeroOrOne,
 } from 'vue-router'
+import type {
+  _ExtractParamParserType,
+} from 'vue-router/experimental'
 
 declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers:
-      | never
+    _ParamParsers: {}
+    RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
+    _RouteFileInfoMap: import('vue-router/auto-routes')._RouteFileInfoMap
   }
 }
 
@@ -111,11 +115,15 @@ declare module 'vue-router/auto-routes' {
         | '/'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/customers.vue': {
       routes:
         | '/customers'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/inbox.vue': {
@@ -123,11 +131,15 @@ declare module 'vue-router/auto-routes' {
         | '/inbox'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/install.vue': {
       routes:
         | '/install'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/settings.vue': {
@@ -139,11 +151,15 @@ declare module 'vue-router/auto-routes' {
         | '/settings/security'
       views:
         | 'default'
+      pathParamNames:
+        | never
     }
     'src/pages/settings/index.vue': {
       routes:
         | '/settings/'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/settings/members.vue': {
@@ -151,17 +167,23 @@ declare module 'vue-router/auto-routes' {
         | '/settings/members'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/settings/notifications.vue': {
       routes:
         | '/settings/notifications'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/settings/security.vue': {
       routes:
         | '/settings/security'
       views:
+        | never
+      pathParamNames:
         | never
     }
   }
