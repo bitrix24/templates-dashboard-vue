@@ -21,7 +21,7 @@ cd <project-name>
 ## Prerequisites
 
 - **Node.js** `>= 22`
-- **pnpm** `>= 10` (the repo pins `pnpm@10.33.0` via the `packageManager` field; run `corepack enable` to pick it up automatically)
+- **pnpm** `>= 12` (the repo pins `pnpm@12.6.0` via the `packageManager` field; run `corepack enable` to pick it up automatically)
 
 ## Setup
 
