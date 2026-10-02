@@ -12,8 +12,8 @@ importers:
         specifier: ^2.0.8
         version: 2.0.8(vue@3.5.43(typescript@6.0.3))
       '@bitrix24/b24jssdk':
-        specifier: ^2.2.0
-        version: 2.2.0
+        specifier: ^3.0.0
+        version: 3.0.0
       '@bitrix24/b24ui-nuxt':
         specifier: ^2.14.0
         version: 2.14.0(@internationalized/date@3.12.4)(@internationalized/number@3.6.8)(@tiptap/extensions@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@tiptap/y-tiptap@3.0.2(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))(axios@1.20.0)(embla-carousel@8.6.0)(esbuild@0.28.2)(lightningcss@1.32.0)(rollup@4.63.6)(tailwindcss@4.3.3)(typescript@6.0.3)(vite@7.3.6(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0))(vue-router@5.3.1(@vue/compiler-sfc@3.5.43)(esbuild@0.28.2)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.43(typescript@6.0.3)))(rollup@4.63.6)(vite@7.3.6(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0))(vue@3.5.43(typescript@6.0.3)))(vue@3.5.43(typescript@6.0.3))(yjs@13.6.29)(zod@4.6.5)
@@ -168,9 +168,9 @@ packages:
     peerDependencies:
       vue: ^3.5.24
 
-  '@bitrix24/b24jssdk@2.2.0':
-    resolution: {integrity: sha512-zqN7y8r2D3g0dAGKq3+0zOEsRtz2MbjoZR70XrTXKKN5l0OUmPK6jy2BEn6TXiqf5ApsvYrcz9nEn2t2jDR4cw==}
-    engines: {node: ^20.0.0 || >=22.0.0}
+  '@bitrix24/b24jssdk@3.0.0':
+    resolution: {integrity: sha512-Z1pXeG4O52Z0RyPWeSIY+BjAeQ1FrGwEXPLTwh4x09jnz1zIHGGAKi/MlG2ayb8DK6fdn5AFtWn815zVz9KoyA==}
+    engines: {node: '>=22.0.0'}
 
   '@bitrix24/b24ui-nuxt@2.14.0':
     resolution: {integrity: sha512-rxe4QjQo/NO+Npip4FuzIKq3MX6vJa6xNx+PV2iDn4jvFv687Fl7Igev0qWXKa2cEe1VG5bjOrGJuyjMpqjWJw==}
@@ -3404,7 +3404,7 @@ snapshots:
     dependencies:
       vue: 3.5.43(typescript@6.0.3)
 
-  '@bitrix24/b24jssdk@2.2.0':
+  '@bitrix24/b24jssdk@3.0.0':
     dependencies:
       '@types/luxon': 3.7.6
       axios: 1.20.0

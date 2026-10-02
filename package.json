@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@bitrix24/b24icons-vue": "^2.0.8",
-    "@bitrix24/b24jssdk": "^2.2.0",
+    "@bitrix24/b24jssdk": "^3.0.0",
     "@bitrix24/b24ui-nuxt": "^2.14.0",
     "@internationalized/date": "^3.12.4",
     "@tanstack/table-core": "^8.21.3",
