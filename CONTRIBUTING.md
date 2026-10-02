@@ -5,7 +5,7 @@ Thanks for your interest in improving this template!
 ## Prerequisites
 
 - Node.js `>= 22`
-- pnpm `>= 10` (`corepack enable` picks up the pinned version)
+- pnpm `>= 12` (`corepack enable` picks up the pinned version)
 
 ## Workflow
 
