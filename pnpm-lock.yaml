@@ -27,8 +27,8 @@ importers:
         specifier: ^8.21.3
         version: 8.21.3(vue@3.5.43(typescript@6.0.3))
       '@unhead/vue':
-        specifier: ^2.1.17
-        version: 2.1.17(vue@3.5.43(typescript@6.0.3))
+        specifier: ^3.4.2
+        version: 3.4.2(esbuild@0.28.2)(lightningcss@1.32.0)(rollup@4.63.6)(vite@7.3.6(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0))(vue@3.5.43(typescript@6.0.3))
       '@unovis/ts':
         specifier: ^1.7.1
         version: 1.7.1
@@ -1362,11 +1362,6 @@ packages:
         optional: true
       webpack:
         optional: true
-
-  '@unhead/vue@2.1.17':
-    resolution: {integrity: sha512-pnC8x9HLV3qQXdvWfylUEU25uhfCAy3ly9nmpQz84j9py818DRfU8jOsQ5wjdWtxyU1vX/fW2udfm4jtxUK8Bg==}
-    peerDependencies:
-      vue: '>=3.5.18'
 
   '@unhead/vue@3.4.2':
     resolution: {integrity: sha512-kIe9HaBEUvueM8HIyGw7Eu1c/1pcGy0gnCwC80rLhNJvxNwxXKywvnGSn1rKv9rAVxQTmbEL6Xec3UFXPoIwWA==}
@@ -2980,9 +2975,6 @@ packages:
   undici@7.30.0:
     resolution: {integrity: sha512-dkrQXeHSaoamnItlYbmzG0wFYrM0ZwDxCIg0A7aKjTyyhh9svRzCNFEzV+Vm05/yehjCzjDZ31KXfGEjYSztDQ==}
     engines: {node: '>=20.18.1'}
-
-  unhead@2.1.17:
-    resolution: {integrity: sha512-HLMKXOszRhAPBrr6VlqCeVeJq2kbC4kXwzGLEZvvojPLWNYTJw22xG7Bfwhsvs31+IBet3Wl8ADg9dwYdyphfQ==}
 
   unhead@3.4.2:
     resolution: {integrity: sha512-LmD1cV1QFIru0AyJi404no2p0ivXUli+lOLs2/fxP56ATJzTF2wSTJNh45YSYGtFD5QmQTWNHmhnXHkVAET1dA==}
@@ -4622,12 +4614,6 @@ snapshots:
       - bun-types-no-globals
       - rollup
       - unloader
-
-  '@unhead/vue@2.1.17(vue@3.5.43(typescript@6.0.3))':
-    dependencies:
-      hookable: 6.1.2
-      unhead: 2.1.17
-      vue: 3.5.43(typescript@6.0.3)
 
   '@unhead/vue@3.4.2(esbuild@0.28.2)(lightningcss@1.32.0)(rollup@4.63.6)(vite@7.3.6(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0))(vue@3.5.43(typescript@6.0.3))':
     dependencies:
@@ -6359,10 +6345,6 @@ snapshots:
   undici-types@7.24.6: {}
 
   undici@7.30.0: {}
-
-  unhead@2.1.17:
-    dependencies:
-      hookable: 6.1.2
 
   unhead@3.4.2(esbuild@0.28.2)(rollup@4.63.6)(vite@7.3.6(@types/node@25.9.9)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0)):
     dependencies:
