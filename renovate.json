@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "description": "Automerge patch and minor updates for non-major dependencies",
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Group all Bitrix24 packages together and never automerge their majors",
+      "matchPackageNames": [
+        "/^@bitrix24//"
+      ],
+      "groupName": "bitrix24",
+      "automerge": false
+    },
+    {
+      "description": "Major updates always require a manual PR review",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true
+  }
+}
