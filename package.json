@@ -18,7 +18,7 @@
     "@internationalized/date": "^3.12.4",
     "@tanstack/table-core": "^8.21.3",
     "@tanstack/vue-table": "^8.21.3",
-    "@unhead/vue": "^2.1.17",
+    "@unhead/vue": "^3.4.2",
     "@unovis/ts": "^1.7.1",
     "@unovis/vue": "^1.7.1",
     "@vueuse/core": "^14.4.0",
